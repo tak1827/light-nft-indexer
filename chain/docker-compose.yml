@@ -1,0 +1,27 @@
+version: '3'
+
+x-resident: &resident
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: 128m
+      max-file: 1
+
+services:
+  geth:
+    <<: [*resident]
+    image: golang:1.20-bullseye
+    entrypoint: /bin/sh /assets/entrypoint.sh
+    environment:
+      NETWORK_ID: 12345
+      GENESIS: /assets/genesis.json
+      KEYSTORE: /assets/keystore
+      ETHERBASE: '0x544C395D4C022001DB2182D1980816CcE12ae9B0'
+    volumes:
+      - ./assets:/assets
+      - $GETH_REPO/build/bin:/usr/local/bin:ro
+      - ./data:/root/.ethereum
+    ports:
+      - 8545:8545/tcp
+      - 8546:8546/tcp

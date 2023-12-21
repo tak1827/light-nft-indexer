@@ -1,0 +1,14 @@
+version: '3'
+
+name: builder
+
+services:
+  geth:
+    image: golang:1.20-bullseye
+    entrypoint: make geth
+    working_dir: /app
+    volumes:
+      - $GETH_REPO:/app
+      # dependency cache
+      - ./tmp/build-cache/l1-geth/go:/go
+      - ./tmp/build-cache/l1-geth/go-build:/root/.cache/go-build
