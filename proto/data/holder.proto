@@ -1,0 +1,24 @@
+syntax = "proto3";
+package tak1827.lightnftindexer.data;
+
+option go_package   = "tak1827/light-nft-indexer/data";
+option optimize_for = CODE_SIZE;
+
+import "google/protobuf/timestamp.proto";
+
+message Holder {
+  string address = 1;
+  uint64 amount  = 2;
+
+  reserved 3, 4, 5;
+
+  repeated Collection collections = 6;
+
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message Collection {
+  string address = 1;
+  string id      = 2;
+}

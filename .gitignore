@@ -23,9 +23,9 @@ node_modules/
 go.work
 
 # Chain
-data
-tmp
-.env
+chain/data
+chain/tmp
+
 
 # yarn v2
 .yarn/cache
@@ -44,7 +44,10 @@ deployments
 # Mac
 .DS_Store
 
+# Env
+.env
+.envrc
+
 # Custom
 note.md
-.envrc
 sandbox

@@ -1,0 +1,62 @@
+syntax = "proto3";
+package tak1827.lightnftindexer.data;
+
+option go_package   = "tak1827/light-nft-indexer/data";
+option optimize_for = CODE_SIZE;
+
+import "google/protobuf/timestamp.proto";
+
+message NFTContract {
+  string address     = 1;
+  string name        = 2;
+  string symbol      = 3;
+  uint32 decimals    = 4;
+  uint64 totalSupply = 5;
+
+  reserved 6, 7;
+
+  repeated string token_ids = 8;
+
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message Token {
+  string    id    = 1;
+  string    owner = 2;
+  TokenMeta meta  = 3;
+
+  reserved 4, 5, 6;
+
+  repeated TransferHistory transfer_histories = 7;
+
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message TokenMeta {
+  string         meta  = 1;
+  TokenMetaImage image = 2;
+
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message TokenMetaImage {
+  ImageType type = 1;
+  string    data = 2;
+}
+
+enum ImageType {
+  IMAGE_TYPE_UNSPECIFIED = 0;
+  IMAGE_TYPE_NATIVE      = 1;
+  IMAGE_TYPE_REFERENCE   = 2;
+}
+
+message TransferHistory {
+  string token_id = 1;
+  string from     = 2;
+  string to       = 3;
+
+  google.protobuf.Timestamp created_at = 10;
+}
