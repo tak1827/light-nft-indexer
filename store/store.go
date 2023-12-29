@@ -83,6 +83,11 @@ func NewPebbleDB(path string, isMem bool, opt *pebble.Options) (d PebbleDB, err 
 	return
 }
 
+func (d *PebbleDB) Close() error {
+	d.cache.Clear()
+	return d.db.Close()
+}
+
 func (d *PebbleDB) Batch() Batch {
 	return NewBatch(d.db, &d.cache)
 }

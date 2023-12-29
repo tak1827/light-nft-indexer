@@ -15,6 +15,7 @@ func TestPutUpdateDeleteGet(t *testing.T) {
 		testdata = data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, 1, []string{"tkn.1", "tkn.2"}, time.Now())
 		err      error
 	)
+	defer db.Close()
 
 	// put
 	batch := db.Batch()
@@ -59,6 +60,7 @@ func TestList(t *testing.T) {
 		}
 		batch = db.Batch()
 	)
+	defer db.Close()
 
 	batch.Put(testdata[0], testdata[1], testdata[2])
 	batch.Commit()
@@ -83,6 +85,8 @@ func TestDeleteAll(t *testing.T) {
 		batch = db.Batch()
 		// keys  = [][]byte{{0x00}, {0x00, 0x00}, {0x00, 0x01}, {0xff}, {0xff, 0xff}, {0xff, 0xfe}}
 	)
+	defer db.Close()
+
 	batch.Put(testdata[0], testdata[1], testdata[2])
 	// for i := range keys {
 	// 	batch.(*PebbleBatch).pb.Set(keys[i], keys[i], pebble.Sync)

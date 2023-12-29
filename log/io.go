@@ -15,4 +15,3 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 func (w *Writer) SetWriter(writer io.Writer) {
 	w.Out = writer
 }
-

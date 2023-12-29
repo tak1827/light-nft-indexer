@@ -17,4 +17,3 @@ func LoadDotenv(filepaths ...string) error {
 func IsNoEnvErr(err error) bool {
 	return strings.Contains(err.Error(), "no such file or directory")
 }
-
