@@ -23,9 +23,8 @@ node_modules/
 go.work
 
 # Chain
-chain/data
-chain/tmp
-
+*/chain/data
+*/chain/tmp
 
 # yarn v2
 .yarn/cache
