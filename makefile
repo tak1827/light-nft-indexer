@@ -37,8 +37,6 @@ bench:
 
 fmt:
 	go fmt ./...
-
-fmtproto:
 	clang-format -i ./proto/**/*.proto
 
 lint:

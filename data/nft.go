@@ -14,12 +14,11 @@ var (
 
 var _ StorableData = (*NFTContract)(nil)
 
-func NewNFTContract(address, name, symbol string, decimals uint32, totalSupply uint64, tokenIds []string, now time.Time) (d *NFTContract) {
+func NewNFTContract(address, name, symbol string, totalSupply uint64, tokenIds []string, now time.Time) (d *NFTContract) {
 	d = &NFTContract{}
 	d.Address = address
 	d.Name = name
 	d.Symbol = symbol
-	d.Decimals = decimals
 	d.TotalSupply = totalSupply
 	d.TokenIds = tokenIds
 	d.CreatedAt = timestamppb.New(now)

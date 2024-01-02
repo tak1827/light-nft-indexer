@@ -1,0 +1,26 @@
+syntax = "proto3";
+package tak1827.lightnftindexer.data;
+
+option go_package   = "tak1827/light-nft-indexer/data";
+option optimize_for = CODE_SIZE;
+
+import "google/protobuf/timestamp.proto";
+
+message Block {
+  uint64 height = 1;
+  string hash   = 2;
+  uint64 time   = 3;
+
+  reserved 4, 5;
+
+  BlockType type = 6;
+
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+enum BlockType {
+  BLOCK_TYPE_UNSPECIFIED               = 0;
+  BLOCK_TYPE_LAST_FACTORY_LOG_FETCHED  = 1;
+  BLOCK_TYPE_LAST_TRANSFER_LOG_FETCHED = 2;
+}

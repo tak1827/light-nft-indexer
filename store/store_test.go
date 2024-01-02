@@ -12,7 +12,7 @@ import (
 func TestPutUpdateDeleteGet(t *testing.T) {
 	var (
 		db, _    = NewPebbleDB("", true, nil)
-		testdata = data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, 1, []string{"tkn.1", "tkn.2"}, time.Now())
+		testdata = data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, []string{"tkn.1", "tkn.2"}, time.Now())
 		err      error
 	)
 	defer db.Close()
@@ -22,6 +22,7 @@ func TestPutUpdateDeleteGet(t *testing.T) {
 	batch.Put(testdata)
 	err = batch.Commit()
 	require.NoError(t, err)
+	batch.Close()
 
 	// get
 	var result data.NFTContract
@@ -40,6 +41,7 @@ func TestPutUpdateDeleteGet(t *testing.T) {
 	err = db.Get(testdata.Key(), &result2)
 	require.NoError(t, err)
 	require.Equal(t, testdata.Value(), result2.Value())
+	batch.Close()
 
 	// delete
 	batch = db.Batch()
@@ -48,19 +50,21 @@ func TestPutUpdateDeleteGet(t *testing.T) {
 	require.NoError(t, err)
 	err = db.Get(testdata.Key(), &result)
 	require.ErrorAs(t, err, &ErrNotFound)
+	batch.Close()
 }
 
 func TestList(t *testing.T) {
 	var (
 		db, _    = NewPebbleDB("", true, nil)
 		testdata = []*data.NFTContract{
-			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, 1, []string{"tkn.1", "tkn.2"}, time.Now()),
-			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, 2, []string{"tkn.3", "tkn.4"}, time.Now()),
-			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, 3, []string{"tkn.5", "tkn.6"}, time.Now()),
+			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, []string{"tkn.1", "tkn.2"}, time.Now()),
+			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, []string{"tkn.3", "tkn.4"}, time.Now()),
+			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, []string{"tkn.5", "tkn.6"}, time.Now()),
 		}
 		batch = db.Batch()
 	)
 	defer db.Close()
+	defer batch.Close()
 
 	batch.Put(testdata[0], testdata[1], testdata[2])
 	batch.Commit()
@@ -78,14 +82,15 @@ func TestDeleteAll(t *testing.T) {
 	var (
 		db, _    = NewPebbleDB("", true, nil)
 		testdata = []*data.NFTContract{
-			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, 1, []string{"tkn.1", "tkn.2"}, time.Now()),
-			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, 2, []string{"tkn.3", "tkn.4"}, time.Now()),
-			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, 3, []string{"tkn.5", "tkn.6"}, time.Now()),
+			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, []string{"tkn.1", "tkn.2"}, time.Now()),
+			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, []string{"tkn.3", "tkn.4"}, time.Now()),
+			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, []string{"tkn.5", "tkn.6"}, time.Now()),
 		}
 		batch = db.Batch()
 		// keys  = [][]byte{{0x00}, {0x00, 0x00}, {0x00, 0x01}, {0xff}, {0xff, 0xff}, {0xff, 0xfe}}
 	)
 	defer db.Close()
+	defer batch.Close()
 
 	batch.Put(testdata[0], testdata[1], testdata[2])
 	// for i := range keys {

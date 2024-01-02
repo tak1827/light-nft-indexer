@@ -10,12 +10,11 @@ message NFTContract {
   string address     = 1;
   string name        = 2;
   string symbol      = 3;
-  uint32 decimals    = 4;
-  uint64 totalSupply = 5;
+  uint64 totalSupply = 4;
 
-  reserved 6, 7;
+  reserved 5, 6;
 
-  repeated string token_ids = 8;
+  repeated string token_ids = 7;
 
   google.protobuf.Timestamp created_at = 10;
   google.protobuf.Timestamp updated_at = 11;
