@@ -3,6 +3,7 @@ package apiclient
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -172,6 +173,39 @@ func (c *EthHttpClient) FetchNFTInfo(ctx context.Context, d *data.NFTContract) (
 	if supply, err := contract.TotalSupply(&opt); err == nil {
 		// ignore error, only update if succeeded
 		d.TotalSupply = supply.Uint64()
+	}
+	return
+}
+
+func (c *EthHttpClient) GetTokenMeta(ctx context.Context, d *data.Token) (err error) {
+	if d.Address == "" || d.TokenId == "" {
+		err = fmt.Errorf("address or token id is empty")
+		return
+	}
+
+	contract, err := c.getNFTContract(ctx, common.HexToAddress(d.Address))
+	if err != nil {
+		err = fmt.Errorf("failed to get contract: %w", err)
+		return
+	}
+
+	// initialize meta
+	if d.Meta == nil {
+		d.Meta = &data.TokenMeta{}
+	}
+
+	var (
+		opt     = bind.CallOpts{Context: ctx}
+		tokenId = new(big.Int)
+		success bool
+	)
+	if tokenId, success = tokenId.SetString(d.TokenId, 10); !success {
+		err = fmt.Errorf("failed to convert token id(%s) to big.Int", d.TokenId)
+		return
+	}
+	if d.Meta.Meta, err = contract.TokenURI(&opt, tokenId); err != nil {
+		err = fmt.Errorf("failed to get name: %w", err)
+		return
 	}
 	return
 }

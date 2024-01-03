@@ -13,7 +13,8 @@ message Block {
 
   reserved 4, 5;
 
-  BlockType type = 6;
+  BlockType type           = 6;
+  string    sub_identifier = 7;
 
   google.protobuf.Timestamp created_at = 10;
   google.protobuf.Timestamp updated_at = 11;

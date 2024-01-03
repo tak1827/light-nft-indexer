@@ -18,4 +18,5 @@ type ChainHttpClient interface {
 	FetchTransferLog(ctx context.Context, address common.Address, startHeight uint64, endHeight *uint64) (events []*ierc721.ContractTransfer, nextStart uint64, err error)
 	FetchFactoryLog(ctx context.Context, address common.Address, startHeight uint64, endHeight *uint64) (events []*factory.FactoryNFTCreated, nextStart uint64, err error)
 	FetchNFTInfo(ctx context.Context, d *data.NFTContract) (err error)
+	GetTokenMeta(ctx context.Context, d *data.Token) (err error)
 }

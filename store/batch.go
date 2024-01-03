@@ -15,6 +15,7 @@ type Batch interface {
 	PutWithTime(t *timestamppb.Timestamp, item ...data.StorableData)
 	Delete(item data.StorableData)
 	Commit() error
+	Reset()
 	Close() error
 	Contents() []data.StorableData
 }
@@ -68,6 +69,10 @@ func (b *PebbleBatch) Commit() error {
 		return fmt.Errorf("failed to commit batch: %w", err)
 	}
 	return nil
+}
+
+func (b *PebbleBatch) Reset() {
+	b.pb.Reset()
 }
 
 func (b *PebbleBatch) Close() error {

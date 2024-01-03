@@ -9,24 +9,25 @@ import (
 )
 
 var (
-	PrefixBlock = []byte("block")
+	PrefixBlock = []byte{byte('b')}
 )
 
 var _ StorableData = (*Block)(nil)
 
-func NewBlock(height uint64, hash string, time uint64, t BlockType, now time.Time) (d *Block) {
+func NewBlock(height uint64, hash string, time uint64, t BlockType, sub string, now time.Time) (d *Block) {
 	d = &Block{}
 	d.Height = height
 	d.Hash = hash
 	d.Time = time
 	d.Type = t
+	d.SubIdentifier = sub
 	d.CreatedAt = timestamppb.New(now)
 	d.UpdatedAt = timestamppb.New(now)
 	return
 }
 
 func (d *Block) Key() []byte {
-	return append(append(PrefixBlock, PrefixSeparator), []byte(fmt.Sprintf("%d", d.Type))...)
+	return append(PrefixBlock, []byte(fmt.Sprintf("%s%d%s%s", PrefixSeparator, d.Type, PrefixSeparator, d.SubIdentifier))...)
 }
 
 func (d *Block) Value() []byte {
