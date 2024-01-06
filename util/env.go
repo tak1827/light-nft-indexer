@@ -1,15 +1,15 @@
 package util
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/joho/godotenv"
-	"github.com/pkg/errors"
 )
 
 func LoadDotenv(filepaths ...string) error {
 	if err := godotenv.Load(filepaths...); err != nil {
-		return errors.Wrap(err, "failed loading env file")
+		return fmt.Errorf("failed loading env file: %w", err)
 	}
 	return nil
 }

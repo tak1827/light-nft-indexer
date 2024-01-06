@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/tak1827/light-nft-indexer/data"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestPutUpdateDeleteGet(t *testing.T) {
@@ -69,12 +68,12 @@ func TestList(t *testing.T) {
 	batch.Put(testdata[0], testdata[1], testdata[2])
 	batch.Commit()
 
-	results := []proto.Message{&data.NFTContract{}}
+	results := []*data.NFTContract{{}}
 	err := db.List(data.PrefixNFTContract, &results)
 	require.NoError(t, err)
 	require.Equal(t, len(testdata), len(results))
 	for i := range results {
-		require.Equal(t, testdata[i].Value(), results[i].(*data.NFTContract).Value())
+		require.Equal(t, testdata[i].Value(), results[i].Value())
 	}
 }
 

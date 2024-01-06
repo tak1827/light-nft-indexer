@@ -4,10 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"reflect"
 
 	"github.com/cockroachdb/pebble"
 	"github.com/cockroachdb/pebble/vfs"
 	"github.com/tak1827/go-cache/lru"
+	"github.com/tak1827/light-nft-indexer/util"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -43,7 +45,7 @@ var (
 type DB interface {
 	Batch() Batch
 	Get(key []byte, result proto.Message) (err error)
-	List(prefix []byte, results *[]proto.Message) (err error)
+	List(prefix []byte, results interface{}) (err error)
 	DeleteAll(prefix []byte) error
 	Clear() error
 }
@@ -117,21 +119,42 @@ func (d *PebbleDB) Get(key []byte, result proto.Message) (err error) {
 	return nil
 }
 
-func (d *PebbleDB) List(prefix []byte, results *[]proto.Message) (err error) {
-	if len(*results) == 0 {
+func (d *PebbleDB) List(prefix []byte, results interface{}) (err error) {
+	if !util.IsPointer(results) {
+		return errors.New("results should be pointer")
+	}
+
+	vResults := reflect.ValueOf(results).Elem()
+	if vResults.Kind() != reflect.Slice {
+		return errors.New("results should be slice")
+	}
+	if vResults.Len() == 0 {
 		return fmt.Errorf("results array is empty. please provide more than one element to marshal into")
 	}
 
+	// cast the first element of the results array to proto.Message
+	protoType := reflect.TypeOf((*proto.Message)(nil)).Elem()
+	if !vResults.Index(0).Type().Implements(protoType) {
+		return fmt.Errorf("results array must contain proto.Message")
+	}
+
 	var (
-		iter = d.db.NewIter(prefixIterOptions(prefix))
-		i    = 0
+		iter      = d.db.NewIter(prefixIterOptions(prefix))
+		i         = 0
+		firstElem = vResults.Index(0)
 	)
+	if firstElem.Kind() == reflect.Ptr {
+		firstElem = firstElem.Elem()
+	}
 	for iter.First(); iter.Valid(); iter.Next() {
 		// if the results array is smaller than the number of results in the db, we need to append
-		if len(*results)-1 < i {
-			*results = append(*results, proto.Clone((*results)[0]))
+		if vResults.Len() <= i {
+			fmt.Println(vResults, i)
+			vResults = reflect.Append(vResults, reflect.New(firstElem.Type()))
 		}
-		if err = proto.Unmarshal(iter.Value(), (*results)[i]); err != nil {
+
+		elem := vResults.Index(i)
+		if err = proto.Unmarshal(iter.Value(), elem.Interface().(proto.Message)); err != nil {
 			return fmt.Errorf("failed to unmarshal %dth index of value: %w", i+1, err)
 		}
 		i++
@@ -143,6 +166,7 @@ func (d *PebbleDB) List(prefix []byte, results *[]proto.Message) (err error) {
 		return fmt.Errorf("failed to close iterator: %w", err)
 	}
 
+	reflect.ValueOf(results).Elem().Set(vResults)
 	return
 }
 
