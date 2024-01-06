@@ -3,7 +3,7 @@ package data
 import "google.golang.org/protobuf/types/known/timestamppb"
 
 var (
-	PrefixSeparator = []byte{byte('.')}
+	Separator = []byte{byte('.')}
 )
 
 type StorableData interface {

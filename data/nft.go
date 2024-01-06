@@ -29,7 +29,7 @@ func NewNFTContract(address, name, symbol string, totalSupply uint64, tokenIds [
 }
 
 func (d *NFTContract) Key() []byte {
-	return append(PrefixNFTContract, []byte(fmt.Sprintf("%s%s", PrefixSeparator, d.Address))...)
+	return append(PrefixNFTContract, []byte(fmt.Sprintf("%s%s", Separator, d.Address))...)
 }
 
 func (d *NFTContract) Value() []byte {
@@ -41,7 +41,7 @@ func (d *NFTContract) Value() []byte {
 }
 
 func (d *Token) Key() []byte {
-	return append(PrefixToken, []byte(fmt.Sprintf("%s%s%s%s", PrefixSeparator, d.Address, PrefixSeparator, d.TokenId))...)
+	return append(PrefixToken, []byte(fmt.Sprintf("%s%s%s%s", Separator, d.Address, Separator, d.TokenId))...)
 }
 
 func (d *Token) Value() []byte {
@@ -62,14 +62,18 @@ func NewTransferHistory(address, tokenId, from, to string, now *timestamppb.Time
 	return
 }
 
-// func (d *TransferHistory) Key() []byte {
-// 	return append(PrefixNFTContract, []byte(fmt.Sprintf("%s%s%s%s", PrefixSeparator, d.Address, PrefixSeparator, d.TokenId))...)
-// }
+func PrefixTransferHistoryByTokenId(address, tokenId string) []byte {
+	return append(PrefixTransferHistory, []byte(fmt.Sprintf("%s%s%s%s", Separator, address, Separator, tokenId))...)
+}
 
-// func (d *TransferHistory) Value() []byte {
-// 	value, err := proto.Marshal(d)
-// 	if err != nil {
-// 		panic(fmt.Errorf("failed to marshal data: %w", err))
-// 	}
-// 	return value
-// }
+func (d *TransferHistory) Key() []byte {
+	return append(PrefixTransferHistoryByTokenId(d.Address, d.TokenId), []byte(fmt.Sprintf("%s%d%s%d", Separator, d.BlockNumber, Separator, d.IndexLogInBlock))...)
+}
+
+func (d *TransferHistory) Value() []byte {
+	value, err := proto.Marshal(d)
+	if err != nil {
+		panic(fmt.Errorf("failed to marshal data: %w", err))
+	}
+	return value
+}

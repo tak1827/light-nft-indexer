@@ -6,8 +6,11 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/rs/zerolog"
@@ -30,6 +33,8 @@ type EthHttpClient struct {
 	c      *ethclient.Client
 	logger zerolog.Logger
 	cache  lru.LRUCache // cache contract instance
+
+	nftAbi *abi.ABI
 }
 
 func NewChainClient(ctx context.Context, endpoint string, logger zerolog.Logger) (c EthHttpClient, err error) {
@@ -51,6 +56,11 @@ func NewChainClient(ctx context.Context, endpoint string, logger zerolog.Logger)
 
 	c.logger = logger
 	c.cache = lru.NewCache(DefaultCacheSize, DefaultCacheTTL)
+
+	if c.nftAbi, err = factory.FactoryMetaData.GetAbi(); err != nil {
+		err = fmt.Errorf("failed to parse abi: %w", err)
+		return
+	}
 
 	return
 }
@@ -98,21 +108,10 @@ func (c *EthHttpClient) FetchTransferLog(ctx context.Context, address common.Add
 }
 
 func (c *EthHttpClient) FetchFactoryLog(ctx context.Context, address common.Address, startHeight uint64, endHeight *uint64) (events []*factory.FactoryNFTCreated, nextStart uint64, err error) {
-	var (
-		contract       *factory.Factory
-		isExpectedType bool
-	)
-	value, exist := c.cache.Get(address.Hex())
-
-	if exist {
-		contract, isExpectedType = value.(*factory.Factory)
-	}
-
-	if !exist || isExpectedType {
-		if contract, err = factory.NewFactory(address, c.c); err != nil {
-			err = fmt.Errorf("failed to create contract: %w", err)
-		}
-		c.cache.Add(address.Hex(), contract)
+	contract, err := c.getFactoryContract(ctx, address)
+	if err != nil {
+		err = fmt.Errorf("failed to get contract: %w", err)
+		return
 	}
 
 	if endHeight == nil {
@@ -211,6 +210,82 @@ func (c *EthHttpClient) GetTokenMeta(ctx context.Context, d *data.Token) (err er
 	return
 }
 
+func (c *EthHttpClient) WatchTransfer(ctx context.Context, addresses []common.Address, callback func(*ierc721.ContractTransfer) error) error {
+	topics, err := abi.MakeTopics([]interface{}{c.nftAbi.Events["Transfer"].ID})
+	if err != nil {
+		return fmt.Errorf("failed to make topics: %w", err)
+	}
+	var (
+		logs   = make(chan types.Log, 128)
+		config = ethereum.FilterQuery{
+			Addresses: addresses,
+			Topics:    topics,
+		}
+	)
+	sub, err := c.c.SubscribeFilterLogs(ctx, config, logs)
+	if err != nil {
+		return fmt.Errorf("failed to start subscription: %w", err)
+	}
+
+	// reuse
+	var (
+		event = new(ierc721.ContractTransfer)
+		log   = types.Log{}
+	)
+	for {
+		select {
+		case <-ctx.Done():
+			sub.Unsubscribe()
+			return nil
+		case log = <-logs:
+			if err = c.nftAbi.UnpackIntoInterface(event, "Transfer", log.Data); err != nil {
+				return fmt.Errorf("failed to unpack log: %w", err)
+			}
+			event.Raw = log
+			if err = callback(event); err != nil {
+				return fmt.Errorf("failed to callback: %w", err)
+			}
+		case err = <-sub.Err():
+			return fmt.Errorf("failed to watch transfer: %w", err)
+		}
+	}
+}
+
+func (c *EthHttpClient) WatchFactory(ctx context.Context, address common.Address, callback func(*factory.FactoryNFTCreated) error) error {
+	contract, err := c.getFactoryContract(ctx, address)
+	if err != nil {
+		return fmt.Errorf("failed to get contract: %w", err)
+	}
+
+	var (
+		ch   = make(chan *factory.FactoryNFTCreated, 128)
+		opts = bind.WatchOpts{
+			Context: ctx,
+		}
+	)
+
+	sub, err := contract.WatchNFTCreated(&opts, ch, nil)
+	if err != nil {
+		return fmt.Errorf("failed to start subscription: %w", err)
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			sub.Unsubscribe()
+			return nil
+		case err = <-sub.Err():
+			if err != nil {
+				return fmt.Errorf("failed to watch transfer: %w", err)
+			}
+		case event := <-ch:
+			if err = callback(event); err != nil {
+				return fmt.Errorf("failed to callback: %w", err)
+			}
+		}
+	}
+}
+
 func (c *EthHttpClient) getNFTContract(ctx context.Context, address common.Address) (contract *ierc721.Contract, err error) {
 	value, exist := c.cache.Get(address.Hex())
 
@@ -220,6 +295,22 @@ func (c *EthHttpClient) getNFTContract(ctx context.Context, address common.Addre
 	}
 
 	if contract, err = ierc721.NewContract(address, c.c); err != nil {
+		err = fmt.Errorf("failed to create contract: %w", err)
+		return
+	}
+	c.cache.Add(address.Hex(), contract)
+	return
+}
+
+func (c *EthHttpClient) getFactoryContract(ctx context.Context, address common.Address) (contract *factory.Factory, err error) {
+	value, exist := c.cache.Get(address.Hex())
+
+	if exist {
+		contract, _ = value.(*factory.Factory)
+		return
+	}
+
+	if contract, err = factory.NewFactory(address, c.c); err != nil {
 		err = fmt.Errorf("failed to create contract: %w", err)
 		return
 	}

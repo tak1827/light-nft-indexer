@@ -2,11 +2,11 @@ package nftcli
 
 import (
 
-	// "github.com/ango-ya/sto-server/apiclient"
-	// "github.com/ango-ya/sto-server/data"
-	// job "github.com/ango-ya/sto-server/job/fetch"
+	// "github.com/tak1827/light-nft-indexer/apiclient"
+	// "github.com/tak1827/light-nft-indexer/data"
+	// job "github.com/tak1827/light-nft-indexer/job/fetch"
 	"github.com/tak1827/light-nft-indexer/log"
-	// "github.com/ango-ya/sto-server/store"
+	// "github.com/tak1827/light-nft-indexer/store"
 	// "github.com/aws/aws-sdk-go/aws"
 	"github.com/spf13/cobra"
 )

@@ -27,7 +27,7 @@ func NewBlock(height uint64, hash string, time uint64, t BlockType, sub string, 
 }
 
 func (d *Block) Key() []byte {
-	return append(PrefixBlock, []byte(fmt.Sprintf("%s%d%s%s", PrefixSeparator, d.Type, PrefixSeparator, d.SubIdentifier))...)
+	return append(PrefixBlock, []byte(fmt.Sprintf("%s%d%s%s", Separator, d.Type, Separator, d.SubIdentifier))...)
 }
 
 func (d *Block) Value() []byte {

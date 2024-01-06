@@ -59,5 +59,10 @@ message TransferHistory {
   string from     = 3;
   string to       = 4;
 
+  reserved 5, 6;
+
+  uint64 block_number       = 7;
+  uint32 index_log_in_block = 8;
+
   google.protobuf.Timestamp created_at = 10;
 }
