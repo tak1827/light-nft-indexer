@@ -124,15 +124,16 @@ func (d *PebbleDB) List(prefix []byte, results interface{}) (err error) {
 		return errors.New("results should be pointer")
 	}
 
-	vResults := reflect.ValueOf(results).Elem()
+	var (
+		origin   = reflect.ValueOf(results)
+		vResults = origin.Elem()
+	)
 	if vResults.Kind() != reflect.Slice {
 		return errors.New("results should be slice")
 	}
 	if vResults.Len() == 0 {
 		return fmt.Errorf("results array is empty. please provide more than one element to marshal into")
 	}
-
-	// cast the first element of the results array to proto.Message
 	protoType := reflect.TypeOf((*proto.Message)(nil)).Elem()
 	if !vResults.Index(0).Type().Implements(protoType) {
 		return fmt.Errorf("results array must contain proto.Message")
@@ -149,7 +150,6 @@ func (d *PebbleDB) List(prefix []byte, results interface{}) (err error) {
 	for iter.First(); iter.Valid(); iter.Next() {
 		// if the results array is smaller than the number of results in the db, we need to append
 		if vResults.Len() <= i {
-			fmt.Println(vResults, i)
 			vResults = reflect.Append(vResults, reflect.New(firstElem.Type()))
 		}
 
@@ -166,7 +166,7 @@ func (d *PebbleDB) List(prefix []byte, results interface{}) (err error) {
 		return fmt.Errorf("failed to close iterator: %w", err)
 	}
 
-	reflect.ValueOf(results).Elem().Set(vResults)
+	origin.Elem().Set(vResults)
 	return
 }
 
