@@ -1,7 +1,7 @@
 syntax = "proto3";
 package tak1827.lightnftindexer.data;
 
-option go_package   = "tak1827/light-nft-indexer/data";
+option go_package   = "github.com/tak1827/light-nft-indexer/data";
 option optimize_for = CODE_SIZE;
 
 import "google/protobuf/timestamp.proto";

@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/cockroachdb/pebble v1.0.0
 	github.com/ethereum/go-ethereum v1.13.7
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.31.0
@@ -12,6 +13,8 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
 	github.com/tak1827/go-cache v0.0.4
+	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917
+	google.golang.org/grpc v1.60.1
 	google.golang.org/protobuf v1.32.0
 )
 
@@ -37,6 +40,7 @@ require (
 	github.com/getsentry/sentry-go v0.25.0 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
@@ -74,10 +78,13 @@ require (
 	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b // indirect
 	golang.org/x/mod v0.14.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.16.0 // indirect
+	google.golang.org/genproto v0.0.0-20231212172506-995d672761c0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240102182953-50ed04b92917 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect

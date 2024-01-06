@@ -25,6 +25,7 @@ const (
 
 var _ ChainHttpClient = (*EthHttpClient)(nil)
 
+// TODO: add delay of calling rpc
 type EthHttpClient struct {
 	c      *ethclient.Client
 	logger zerolog.Logger

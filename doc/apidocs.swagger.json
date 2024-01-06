@@ -1,0 +1,227 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "service/nft.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Nft"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/batch-mint": {
+      "post": {
+        "operationId": "Nft_BatchMint",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceBatchMintResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/serviceBatchMintRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Nft"
+        ]
+      }
+    },
+    "/generate-transfer-sig": {
+      "post": {
+        "operationId": "Nft_GenerateTransferSig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceGenerateTransferSigResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/serviceGenerateTransferSigRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Nft"
+        ]
+      }
+    },
+    "/hash/{requestId}": {
+      "get": {
+        "operationId": "Nft_GetTransactionHash",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceGetTransactionHashResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Nft"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "serviceBatchMintRequest": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sequence": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "to": {
+          "type": "string"
+        },
+        "amounts": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "serviceBatchMintResponse": {
+      "type": "object",
+      "properties": {
+        "transactionHash": {
+          "type": "string"
+        },
+        "nftIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "serviceGenerateTransferSigRequest": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceGenerateTransferSigResponse": {
+      "type": "object",
+      "properties": {
+        "sig": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceGetTransactionHashResponse": {
+      "type": "object",
+      "properties": {
+        "transactionHash": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "to": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "repeated data.BatchContent contents   = 4;"
+        }
+      }
+    }
+  }
+}

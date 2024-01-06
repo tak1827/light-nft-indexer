@@ -6,23 +6,22 @@ proto:
 	rm ./data/*.pb.go; \
 	rm ./service/*.pb.go; \
 	cd ./proto; \
-	protoc -I=. -I=${GOPATH}/src/github.com/protobuf \
+	protoc -I=. \
 		--go_out=paths=source_relative:../  \
 		$(PROTO_SRC_FILES_DATA); \
-	# protoc -I=. \
-	# 	-I=${GOPATH}/src/github.com/protobuf \
-	# 	-I=${GOPATH}/src/github.com/googleapis \
-	# 	-I=${GOPATH}/src/github.com/grpc-gateway \
-	# 	--go_out=paths=source_relative:../  \
-	# 	--go-grpc_out=../ --go-grpc_opt=paths=source_relative \
-	# 	--go-grpc_opt=require_unimplemented_servers=false \
-	# 	--grpc-gateway_out=../ \
-	# 	--grpc-gateway_opt=logtostderr=true \
-	# 	--grpc-gateway_opt=paths=source_relative \
-  #   --grpc-gateway_opt=generate_unbound_methods=true \
-  #   --openapiv2_opt=logtostderr=true \
-  #   --openapiv2_out=allow_merge=true,merge_file_name=../doc/spec/apidocs:. \
-	# 	$(PROTO_SRC_FILES_SERVICE)
+	protoc -I=. \
+		-I=${GOPATH}/src/github.com/googleapis \
+		-I=${GOPATH}/src/github.com/grpc-gateway \
+		--go_out=paths=source_relative:../  \
+		--go-grpc_out=../ --go-grpc_opt=paths=source_relative \
+		--go-grpc_opt=require_unimplemented_servers=false \
+		--grpc-gateway_out=../ \
+		--grpc-gateway_opt=logtostderr=true \
+		--grpc-gateway_opt=paths=source_relative \
+    --grpc-gateway_opt=generate_unbound_methods=true \
+    --openapiv2_opt=logtostderr=true \
+    --openapiv2_out=allow_merge=true,merge_file_name=../doc/spec/apidocs:. \
+		$(PROTO_SRC_FILES_SERVICE)
 
 install:
 	cd ./cmd/signcli/; \
@@ -46,8 +45,8 @@ build:
 	cd ./cmd/signcli/; \
 	go build -o signcli -gcflags '-m' -tags 'main'
 
-.PHONY: docs
-docs:
+.PHONY: doc
+doc:
 	docker-compose up -d docs
 
 docdown:
