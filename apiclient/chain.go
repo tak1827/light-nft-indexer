@@ -65,48 +65,6 @@ func NewChainClient(ctx context.Context, endpoint string, logger zerolog.Logger)
 	return
 }
 
-func (c *EthHttpClient) FetchTransferLog(ctx context.Context, address common.Address, startHeight uint64, endHeight *uint64) (events []*ierc721.ContractTransfer, nextStart uint64, err error) {
-	contract, err := c.getNFTContract(ctx, address)
-	if err != nil {
-		err = fmt.Errorf("failed to get contract: %w", err)
-		return
-	}
-
-	if endHeight == nil {
-		*endHeight, err = c.c.BlockNumber(ctx)
-		if err != nil {
-			err = fmt.Errorf("failed to get latest block number: %w", err)
-			return
-		}
-	}
-
-	opts := bind.FilterOpts{
-		Start:   startHeight,
-		End:     endHeight,
-		Context: ctx,
-	}
-	itr, err := contract.FilterTransfer(&opts, nil, nil, nil)
-	defer itr.Close()
-
-	for itr.Next() {
-		if MaxRetrivalLogs < len(events) {
-			nextStart = itr.Event.Raw.BlockNumber
-			break
-		}
-		events = append(events, itr.Event)
-	}
-
-	if err = itr.Error(); err != nil {
-		err = fmt.Errorf("failed to iterate logs: %w", err)
-		return
-	}
-
-	if nextStart == 0 {
-		nextStart = *endHeight
-	}
-	return
-}
-
 func (c *EthHttpClient) FetchFactoryLog(ctx context.Context, address common.Address, startHeight uint64, endHeight *uint64) (events []*factory.FactoryNFTCreated, nextStart uint64, err error) {
 	contract, err := c.getFactoryContract(ctx, address)
 	if err != nil {
@@ -128,6 +86,48 @@ func (c *EthHttpClient) FetchFactoryLog(ctx context.Context, address common.Addr
 		Context: ctx,
 	}
 	itr, err := contract.FilterNFTCreated(&opts, nil)
+	defer itr.Close()
+
+	for itr.Next() {
+		if MaxRetrivalLogs < len(events) {
+			nextStart = itr.Event.Raw.BlockNumber
+			break
+		}
+		events = append(events, itr.Event)
+	}
+
+	if err = itr.Error(); err != nil {
+		err = fmt.Errorf("failed to iterate logs: %w", err)
+		return
+	}
+
+	if nextStart == 0 {
+		nextStart = *endHeight
+	}
+	return
+}
+
+func (c *EthHttpClient) FetchTransferLog(ctx context.Context, address common.Address, startHeight uint64, endHeight *uint64) (events []*ierc721.ContractTransfer, nextStart uint64, err error) {
+	contract, err := c.getNFTContract(ctx, address)
+	if err != nil {
+		err = fmt.Errorf("failed to get contract: %w", err)
+		return
+	}
+
+	if endHeight == nil {
+		*endHeight, err = c.c.BlockNumber(ctx)
+		if err != nil {
+			err = fmt.Errorf("failed to get latest block number: %w", err)
+			return
+		}
+	}
+
+	opts := bind.FilterOpts{
+		Start:   startHeight,
+		End:     endHeight,
+		Context: ctx,
+	}
+	itr, err := contract.FilterTransfer(&opts, nil, nil, nil)
 	defer itr.Close()
 
 	for itr.Next() {
@@ -210,48 +210,7 @@ func (c *EthHttpClient) GetTokenMeta(ctx context.Context, d *data.Token) (err er
 	return
 }
 
-func (c *EthHttpClient) WatchTransfer(ctx context.Context, addresses []common.Address, callback func(*ierc721.ContractTransfer) error) error {
-	topics, err := abi.MakeTopics([]interface{}{c.nftAbi.Events["Transfer"].ID})
-	if err != nil {
-		return fmt.Errorf("failed to make topics: %w", err)
-	}
-	var (
-		logs   = make(chan types.Log, 128)
-		config = ethereum.FilterQuery{
-			Addresses: addresses,
-			Topics:    topics,
-		}
-	)
-	sub, err := c.c.SubscribeFilterLogs(ctx, config, logs)
-	if err != nil {
-		return fmt.Errorf("failed to start subscription: %w", err)
-	}
-
-	// reuse
-	var (
-		event = new(ierc721.ContractTransfer)
-		log   = types.Log{}
-	)
-	for {
-		select {
-		case <-ctx.Done():
-			sub.Unsubscribe()
-			return nil
-		case log = <-logs:
-			if err = c.nftAbi.UnpackIntoInterface(event, "Transfer", log.Data); err != nil {
-				return fmt.Errorf("failed to unpack log: %w", err)
-			}
-			event.Raw = log
-			if err = callback(event); err != nil {
-				return fmt.Errorf("failed to callback: %w", err)
-			}
-		case err = <-sub.Err():
-			return fmt.Errorf("failed to watch transfer: %w", err)
-		}
-	}
-}
-
-func (c *EthHttpClient) WatchFactory(ctx context.Context, address common.Address, callback func(*factory.FactoryNFTCreated) error) error {
+func (c *EthHttpClient) WatchFactoryLog(ctx context.Context, address common.Address, callback func(*factory.FactoryNFTCreated) error) error {
 	contract, err := c.getFactoryContract(ctx, address)
 	if err != nil {
 		return fmt.Errorf("failed to get contract: %w", err)
@@ -268,11 +227,11 @@ func (c *EthHttpClient) WatchFactory(ctx context.Context, address common.Address
 	if err != nil {
 		return fmt.Errorf("failed to start subscription: %w", err)
 	}
+	defer sub.Unsubscribe()
 
 	for {
 		select {
 		case <-ctx.Done():
-			sub.Unsubscribe()
 			return nil
 		case err = <-sub.Err():
 			if err != nil {
@@ -282,6 +241,47 @@ func (c *EthHttpClient) WatchFactory(ctx context.Context, address common.Address
 			if err = callback(event); err != nil {
 				return fmt.Errorf("failed to callback: %w", err)
 			}
+		}
+	}
+}
+
+func (c *EthHttpClient) WatchTransferLog(ctx context.Context, addresses []common.Address, callback func(*ierc721.ContractTransfer) error) error {
+	topics, err := abi.MakeTopics([]interface{}{c.nftAbi.Events["Transfer"].ID})
+	if err != nil {
+		return fmt.Errorf("failed to make topics: %w", err)
+	}
+	var (
+		logs   = make(chan types.Log, 128)
+		config = ethereum.FilterQuery{
+			Addresses: addresses,
+			Topics:    topics,
+		}
+	)
+	sub, err := c.c.SubscribeFilterLogs(ctx, config, logs)
+	if err != nil {
+		return fmt.Errorf("failed to start subscription: %w", err)
+	}
+	defer sub.Unsubscribe()
+
+	// reuse
+	var (
+		event = new(ierc721.ContractTransfer)
+		log   = types.Log{}
+	)
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case log = <-logs:
+			if err = c.nftAbi.UnpackIntoInterface(event, "Transfer", log.Data); err != nil {
+				return fmt.Errorf("failed to unpack log: %w", err)
+			}
+			event.Raw = log
+			if err = callback(event); err != nil {
+				return fmt.Errorf("failed to callback: %w", err)
+			}
+		case err = <-sub.Err():
+			return fmt.Errorf("failed to watch transfer: %w", err)
 		}
 	}
 }

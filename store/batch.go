@@ -18,6 +18,8 @@ type Batch interface {
 	Reset()
 	Close() error
 	Contents() []data.StorableData
+	Empty() bool
+	Len() uint32
 }
 
 var _ Batch = (*PebbleBatch)(nil)
@@ -68,6 +70,7 @@ func (b *PebbleBatch) Commit() error {
 	if err := b.pb.Commit(pebble.Sync); err != nil {
 		return fmt.Errorf("failed to commit batch: %w", err)
 	}
+	b.pb.Reset()
 	return nil
 }
 
@@ -81,6 +84,14 @@ func (b *PebbleBatch) Close() error {
 
 func (b *PebbleBatch) Contents() []data.StorableData {
 	return b.Items
+}
+
+func (b *PebbleBatch) Empty() bool {
+	return b.pb.Empty()
+}
+
+func (b *PebbleBatch) Len() uint32 {
+	return b.pb.Count()
 }
 
 func clearCache(c *lru.LRUCache, key []byte) {

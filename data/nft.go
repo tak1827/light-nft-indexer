@@ -11,6 +11,7 @@ import (
 var (
 	PrefixNFTContract     = []byte{byte('n')}
 	PrefixToken           = []byte{byte('t')}
+	PrefixTokenOwnerIndex = []byte{byte('o')}
 	PrefixTransferHistory = []byte{byte('h')}
 )
 
@@ -38,6 +39,26 @@ func (d *NFTContract) Value() []byte {
 		panic(fmt.Errorf("failed to marshal data: %w", err))
 	}
 	return value
+}
+
+type TokenOwnerIndex struct {
+	*Token
+}
+
+func (d *TokenOwnerIndex) Key() []byte {
+	return append(PrefixTokenOwnerIndex, []byte(fmt.Sprintf("%s%s%s%s", Separator, d.Owner, Separator, d.TokenId))...)
+}
+
+func (d *TokenOwnerIndex) Value() []byte {
+	value, err := proto.Marshal(d)
+	if err != nil {
+		panic(fmt.Errorf("failed to marshal data: %w", err))
+	}
+	return value
+}
+
+func NewTokenOwnerIndex(d *Token) *TokenOwnerIndex {
+	return &TokenOwnerIndex{Token: d}
 }
 
 func (d *Token) Key() []byte {
