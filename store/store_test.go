@@ -110,33 +110,44 @@ func TestDeleteAll(t *testing.T) {
 
 func TestBatchEmptyLenContents(t *testing.T) {
 	var (
-		db, _    = NewPebbleDB("", true, nil)
-		testdata = []*data.NFTContract{
-			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, []string{"tkn.1", "tkn.2"}, time.Now()),
-			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, []string{"tkn.3", "tkn.4"}, time.Now()),
-			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, []string{"tkn.5", "tkn.6"}, time.Now()),
-		}
-		batch = db.Batch()
+		db, _  = NewPebbleDB("", true, nil)
+		conunt = 0
+		batch  = db.Batch()
 	)
 	defer db.Close()
 	defer batch.Close()
 
-	// test length
-	batch.Put(testdata[0], testdata[1], testdata[2])
-	require.Equal(t, uint32(3), batch.Len())
+	for conunt < 2 {
+		testdata := []*data.NFTContract{
+			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, []string{"tkn.1", "tkn.2"}, time.Now()),
+			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, []string{"tkn.3", "tkn.4"}, time.Now()),
+			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, []string{"tkn.5", "tkn.6"}, time.Now()),
+		}
 
-	// test contents
-	_, values := batch.Contents()
-	dests := make([]proto.Message, len(values))
-	for i := range dests {
-		dests[i] = &data.NFTContract{}
-	}
-	Unmarshal(values, dests)
-	for i := range dests {
-		require.Equal(t, testdata[i].Address, dests[i].(*data.NFTContract).Address)
+		// test length
+		batch.Put(testdata[0], testdata[1], testdata[2])
+		require.Equal(t, 3, batch.Len())
+
+		// test contents
+		_, values := batch.Contents()
+		dests := make([]proto.Message, len(values))
+		for i := range dests {
+			dests[i] = &data.NFTContract{}
+		}
+		Unmarshal(values, dests)
+		for i := range dests {
+			require.Equal(t, testdata[i].Address, dests[i].(*data.NFTContract).Address)
+		}
+
+		// test empty
+		batch.Reset()
+		require.True(t, batch.Empty())
+		require.Equal(t, 0, batch.Len())
+		k, v := batch.Contents()
+		require.Equal(t, [][]byte{}, k)
+		require.Equal(t, [][]byte{}, v)
+
+		conunt++
 	}
 
-	// test empty
-	batch.Reset()
-	require.True(t, batch.Empty())
 }

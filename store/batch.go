@@ -15,11 +15,14 @@ type Batch interface {
 	Put(item ...data.StorableData)
 	PutWithTime(t *timestamppb.Timestamp, item ...data.StorableData)
 	Delete(item data.StorableData)
+
 	Commit() error
+
 	Reset()
 	Close() error
+
 	Empty() bool
-	Len() uint32
+	Len() int
 	Contents() ([][]byte, [][]byte)
 }
 
@@ -84,8 +87,8 @@ func (b *PebbleBatch) Empty() bool {
 	return b.pb.Empty()
 }
 
-func (b *PebbleBatch) Len() uint32 {
-	return b.pb.Count()
+func (b *PebbleBatch) Len() int {
+	return int(b.pb.Count())
 }
 
 func (b *PebbleBatch) Contents() ([][]byte, [][]byte) {
