@@ -48,6 +48,7 @@ type DB interface {
 	List(prefix []byte, results interface{}) (err error)
 	DeleteAll(prefix []byte) error
 	Clear() error
+	Close() error
 }
 
 var _ DB = (*PebbleDB)(nil)
@@ -132,7 +133,7 @@ func (d *PebbleDB) List(prefix []byte, results interface{}) (err error) {
 		return errors.New("results should be slice")
 	}
 	if vResults.Len() == 0 {
-		return fmt.Errorf("results array is empty. please provide more than one element to marshal into")
+		return ErrNotFound
 	}
 	protoType := reflect.TypeOf((*proto.Message)(nil)).Elem()
 	if !vResults.Index(0).Type().Implements(protoType) {
