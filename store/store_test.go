@@ -12,7 +12,7 @@ import (
 func TestPutUpdateDeleteGet(t *testing.T) {
 	var (
 		db, _    = NewPebbleDB("", true, nil)
-		testdata = data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, []string{"tkn.1", "tkn.2"}, time.Now())
+		testdata = data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, time.Now())
 		err      error
 	)
 	defer db.Close()
@@ -57,9 +57,9 @@ func TestList(t *testing.T) {
 	var (
 		db, _    = NewPebbleDB("", true, nil)
 		testdata = []*data.NFTContract{
-			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, []string{"tkn.1", "tkn.2"}, time.Now()),
-			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, []string{"tkn.3", "tkn.4"}, time.Now()),
-			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, []string{"tkn.5", "tkn.6"}, time.Now()),
+			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, time.Now()),
+			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, time.Now()),
+			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, time.Now()),
 		}
 		batch = db.Batch()
 	)
@@ -82,9 +82,9 @@ func TestDeleteAll(t *testing.T) {
 	var (
 		db, _    = NewPebbleDB("", true, nil)
 		testdata = []*data.NFTContract{
-			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, []string{"tkn.1", "tkn.2"}, time.Now()),
-			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, []string{"tkn.3", "tkn.4"}, time.Now()),
-			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, []string{"tkn.5", "tkn.6"}, time.Now()),
+			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, time.Now()),
+			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, time.Now()),
+			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, time.Now()),
 		}
 		batch = db.Batch()
 		// keys  = [][]byte{{0x00}, {0x00, 0x00}, {0x00, 0x01}, {0xff}, {0xff, 0xff}, {0xff, 0xfe}}
@@ -119,9 +119,9 @@ func TestBatchEmptyLenContents(t *testing.T) {
 
 	for conunt < 2 {
 		testdata := []*data.NFTContract{
-			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, []string{"tkn.1", "tkn.2"}, time.Now()),
-			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, []string{"tkn.3", "tkn.4"}, time.Now()),
-			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, []string{"tkn.5", "tkn.6"}, time.Now()),
+			data.NewNFTContract("addr.1", "name.1", "symbol.1", 1, time.Now()),
+			data.NewNFTContract("addr.2", "name.2", "symbol.2", 2, time.Now()),
+			data.NewNFTContract("addr.3", "name.3", "symbol.3", 3, time.Now()),
 		}
 
 		// test length

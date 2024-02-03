@@ -22,13 +22,16 @@ type MockChainClient struct {
 	te      []*ierc721.ContractTransfer
 	teIndex int
 
+	endHeight *uint64
+
 	delay time.Duration
 	errCh chan error
 }
 
-func NewMockChainClient(fe []*factory.FactoryNFTCreated, te []*ierc721.ContractTransfer, delay int) (c MockChainClient) {
+func NewMockChainClient(fe []*factory.FactoryNFTCreated, te []*ierc721.ContractTransfer, endHeight *uint64, delay int) (c MockChainClient) {
 	c.fe = fe
 	c.te = te
+	c.endHeight = endHeight
 	c.delay = time.Duration(delay) * time.Millisecond
 	c.errCh = make(chan error)
 	return
@@ -39,11 +42,11 @@ func (c *MockChainClient) EmitErr(err error) {
 }
 
 func (c *MockChainClient) FetchFactoryLog(ctx context.Context, address common.Address, startHeight uint64, endHeight *uint64) (events []*factory.FactoryNFTCreated, nextStart uint64, err error) {
-	return
+	return c.fe, *c.endHeight, nil
 }
 
 func (c *MockChainClient) FetchTransferLog(ctx context.Context, address common.Address, startHeight uint64, endHeight *uint64) (events []*ierc721.ContractTransfer, nextStart uint64, err error) {
-	return
+	return c.te, *c.endHeight, nil
 }
 
 func (c *MockChainClient) FetchNFTInfo(ctx context.Context, d *data.NFTContract) (err error) {

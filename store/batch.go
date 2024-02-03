@@ -43,6 +43,7 @@ func NewBatch(db *pebble.DB, c *lru.LRUCache) Batch {
 func (b *PebbleBatch) Put(item ...data.StorableData) {
 	for i := range item {
 		b.pb.Set(item[i].Key(), item[i].Value(), pebble.Sync)
+		clearCache(b.cache, item[i].Key())
 	}
 }
 

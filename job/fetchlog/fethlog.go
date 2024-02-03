@@ -18,22 +18,26 @@ type Fetcher struct {
 	batch  store.Batch
 }
 
-func NewFetcher(db store.DB, client apiclient.ChainHttpClient, batch store.Batch) *Fetcher {
+func NewFetcher(db store.DB, client apiclient.ChainHttpClient) *Fetcher {
 	return &Fetcher{
 		db:     db,
 		client: client,
-		batch:  batch,
+		batch:  db.Batch(),
 	}
 }
 
 func (f *Fetcher) FetchAll(ctx context.Context, address common.Address, now *timestamppb.Timestamp) error {
-	nfts, err := f.FetchNFTs(ctx, address, now, true)
-	if err != nil {
+	if _, err := f.FetchNFTs(ctx, address, now, true); err != nil {
 		return fmt.Errorf("failed to fetch nft: %w", err)
 	}
 
+	nfts, err := f.getAllNfts()
+	if err != nil {
+		return fmt.Errorf("failed to get all tokens: %w", err)
+	}
+
 	for i := range nfts {
-		if _, err = f.FetchTokens(ctx, address, now, &nfts[i], true); err != nil {
+		if _, err = f.FetchTokens(ctx, address, now, nfts[i], true); err != nil {
 			return fmt.Errorf("failed to fetch token: %w", err)
 		}
 	}
@@ -63,6 +67,7 @@ func (f *Fetcher) FetchNFTs(ctx context.Context, address common.Address, now *ti
 	}
 
 	if withCommit {
+		// update the next start height and insert nfts
 		if err = f.commit(b, nextStart, now); err != nil {
 			return nil, err
 		}
@@ -88,7 +93,7 @@ func (f *Fetcher) FetchTokens(ctx context.Context, address common.Address, now *
 			return nil, fmt.Errorf("failed to get token: %w", err)
 		}
 		tokens[i].Owner = events[i].To.Hex()
-		tokens[i].TransferHistories = append(tokens[i].TransferHistories, data.NewTransferHistory(nft.Address, events[i].TokenId.String(), events[i].From.Hex(), events[i].To.Hex(), now))
+		// tokens[i].TransferHistories = append(tokens[i].TransferHistories, data.NewTransferHistory(nft.Address, events[i].TokenId.String(), events[i].From.Hex(), events[i].To.Hex(), now))
 		if tokens[i].Meta == nil {
 			// initialize meta
 			if err = f.client.GetTokenMeta(ctx, tokens[i]); err != nil {
@@ -99,6 +104,7 @@ func (f *Fetcher) FetchTokens(ctx context.Context, address common.Address, now *
 	}
 
 	if withCommit {
+		// update the next start height and insert tokens
 		if err = f.commit(b, nextStart, now); err != nil {
 			return nil, err
 		}
@@ -109,24 +115,42 @@ func (f *Fetcher) FetchTokens(ctx context.Context, address common.Address, now *
 
 func (f *Fetcher) getBlock(t data.BlockType, sub string, now *timestamppb.Timestamp) (*data.Block, error) {
 	b := data.Block{Type: t, SubIdentifier: sub}
-	if err := f.db.Get(b.Key(), &b); !errors.Is(err, store.ErrNotFound) {
-		return &b, fmt.Errorf("failed to get last factory log fetched: %w", err)
-	} else {
-		// first time to fetch
-		b.Height = 0
-		b.CreatedAt = now
+	if err := f.db.Get(b.Key(), &b); err != nil {
+		if errors.Is(err, store.ErrNotFound) {
+			// set the initail block if not found(first time to fetch)
+			b.Height = 0
+			b.CreatedAt = now
+		} else {
+			// other throw error
+			return &b, fmt.Errorf("failed to get last factory log fetched: %w", err)
+		}
 	}
 
 	return &b, nil
 }
 
+func (f *Fetcher) getAllNfts() ([]*data.NFTContract, error) {
+	nfts := []*data.NFTContract{{}}
+	if err := f.db.List(data.PrefixNFTContract, &nfts); err != nil {
+		if errors.Is(err, store.ErrNotFound) {
+			return []*data.NFTContract{}, nil
+		} else {
+			return nil, fmt.Errorf("failed to list nft contracts: %w", err)
+		}
+	}
+
+	return nfts, nil
+}
+
 func (f *Fetcher) getToken(address, tokenId string, now *timestamppb.Timestamp) (*data.Token, error) {
 	t := data.Token{Address: address, TokenId: tokenId}
-	if err := f.db.Get(t.Key(), &t); !errors.Is(err, store.ErrNotFound) {
-		return &t, fmt.Errorf("failed to get last factory log fetched: %w", err)
-	} else {
-		// first time to fetch
-		t.CreatedAt = now
+	if err := f.db.Get(t.Key(), &t); err != nil {
+		if errors.Is(err, store.ErrNotFound) {
+			// set the initail token if not found(first time to fetch)
+			t.CreatedAt = now
+		} else {
+			return &t, fmt.Errorf("failed to get token: %w", err)
+		}
 	}
 
 	return &t, nil

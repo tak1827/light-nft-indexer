@@ -14,7 +14,7 @@ message NFTContract {
 
   reserved 5, 6;
 
-  repeated string token_ids = 7;
+  // repeated string token_ids = 7;
 
   google.protobuf.Timestamp created_at = 10;
   google.protobuf.Timestamp updated_at = 11;

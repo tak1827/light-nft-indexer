@@ -16,6 +16,7 @@ import (
 	"github.com/tak1827/light-nft-indexer/contract/ierc721"
 	"github.com/tak1827/light-nft-indexer/data"
 	"github.com/tak1827/light-nft-indexer/store"
+	"github.com/tak1827/light-nft-indexer/util/testutil"
 )
 
 var (
@@ -29,26 +30,13 @@ var (
 	acc3 = common.BigToAddress(big.NewInt(1003))
 )
 
-func initDB(ds ...data.StorableData) store.DB {
-	var (
-		db, _ = store.NewPebbleDB("", true, nil)
-		batch = db.Batch()
-	)
-	defer batch.Close()
-
-	batch.Put(ds...)
-	batch.Commit()
-
-	return &db
-}
-
 func TestWatcher(t *testing.T) {
 	var (
 		initalData = []data.StorableData{
 			&data.NFTContract{Address: oneAddress.Hex()},
 			&data.Token{Address: oneAddress.Hex(), TokenId: "1"},
 		}
-		db = initDB(initalData...)
+		db = testutil.InitDB(initalData...)
 		fe = []*factory.FactoryNFTCreated{{Nft: twoAddress}, {Nft: threeAddress}}
 		te = []*ierc721.ContractTransfer{
 			{
@@ -73,7 +61,7 @@ func TestWatcher(t *testing.T) {
 				},
 			},
 		}
-		client = apiclient.NewMockChainClient(fe, te, 10)
+		client = apiclient.NewMockChainClient(fe, te, nil, 10)
 		w      = NewWatcher(db, &client, 100)
 		err    error
 	)
@@ -117,7 +105,7 @@ func TestWatcher(t *testing.T) {
 func TestErrHand(t *testing.T) {
 	var (
 		db, _       = store.NewPebbleDB("", true, nil)
-		client      = apiclient.NewMockChainClient([]*factory.FactoryNFTCreated{}, []*ierc721.ContractTransfer{}, 10)
+		client      = apiclient.NewMockChainClient([]*factory.FactoryNFTCreated{}, []*ierc721.ContractTransfer{}, nil, 10)
 		w           = NewWatcher(&db, &client, 100)
 		expectedErr = errors.New("test")
 		err         error
