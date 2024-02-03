@@ -1,0 +1,36 @@
+syntax = "proto3";
+package tak1827.lightnftindexer.service;
+
+option go_package = "github.com/tak1827/light-nft-indexer/service";
+
+import "google/api/annotations.proto";
+import "data/holder.proto";
+
+service Holder {
+  rpc GetHolder(GetHolderRequest) returns (GetHolderResponse) {
+    option (google.api.http).get = "/v1/holder/{wallet_address}";
+  }
+
+  rpc ListAllHolder(ListAllHolderRequest) returns (ListAllHolderResponse) {
+    option (google.api.http).get = "/v1/holder";
+  }
+}
+
+message GetHolderRequest {
+  string wallet_address = 1;
+}
+
+message GetHolderResponse {
+  data.Holder holder = 1;
+}
+
+message ListAllHolderRequest {}
+
+message HolderMini {
+  string address = 1;
+  uint64 amount  = 2;
+}
+
+message ListAllHolderResponse {
+  repeated HolderMini holders = 1;
+}

@@ -167,6 +167,11 @@ func (d *PebbleDB) List(prefix []byte, results interface{}) (err error) {
 		return fmt.Errorf("failed to close iterator: %w", err)
 	}
 
+	// return error if no results found
+	if i == 0 {
+		return ErrNotFound
+	}
+
 	origin.Elem().Set(vResults)
 	return
 }

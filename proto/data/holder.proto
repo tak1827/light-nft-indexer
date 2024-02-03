@@ -19,6 +19,6 @@ message Holder {
 }
 
 message Collection {
-  string address = 1;
-  string id      = 2;
+  string contract_address = 1;
+  string id               = 2;
 }

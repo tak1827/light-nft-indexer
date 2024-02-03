@@ -1,10 +1,13 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "service/nft.proto",
+    "title": "service/holder.proto",
     "version": "version not set"
   },
   "tags": [
+    {
+      "name": "Holder"
+    },
     {
       "name": "Nft"
     }
@@ -16,78 +19,36 @@
     "application/json"
   ],
   "paths": {
-    "/batch-mint": {
-      "post": {
-        "operationId": "Nft_BatchMint",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/serviceBatchMintResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/serviceBatchMintRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Nft"
-        ]
-      }
-    },
-    "/generate-transfer-sig": {
-      "post": {
-        "operationId": "Nft_GenerateTransferSig",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/serviceGenerateTransferSigResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/serviceGenerateTransferSigRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Nft"
-        ]
-      }
-    },
-    "/hash/{requestId}": {
+    "/v1/holder": {
       "get": {
-        "operationId": "Nft_GetTransactionHash",
+        "operationId": "Holder_ListAllHolder",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/serviceGetTransactionHashResponse"
+              "$ref": "#/definitions/serviceListAllHolderResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Holder"
+        ]
+      }
+    },
+    "/v1/holder/{walletAddress}": {
+      "get": {
+        "operationId": "Holder_GetHolder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceGetHolderResponse"
             }
           },
           "default": {
@@ -99,11 +60,128 @@
         },
         "parameters": [
           {
-            "name": "requestId",
+            "name": "walletAddress",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int64"
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Holder"
+        ]
+      }
+    },
+    "/v1/nft": {
+      "get": {
+        "operationId": "Nft_ListAllNftContract",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceListAllNftContractResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Nft"
+        ]
+      }
+    },
+    "/v1/nft/{contractAddress}": {
+      "get": {
+        "operationId": "Nft_GetNftContract",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceGetNftContractResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "contractAddress",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Nft"
+        ]
+      }
+    },
+    "/v1/nft/{contractAddress}/token": {
+      "get": {
+        "operationId": "Nft_ListAllNftToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceListAllNftTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "contractAddress",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Nft"
+        ]
+      }
+    },
+    "/v1/nft/{contractAddress}/token/{tokenId}": {
+      "get": {
+        "operationId": "Nft_GetNftToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceGetNftTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "contractAddress",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tokenId",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -113,6 +191,169 @@
     }
   },
   "definitions": {
+    "dataCollection": {
+      "type": "object",
+      "properties": {
+        "contractAddress": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "dataHolder": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "collections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dataCollection"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "dataImageType": {
+      "type": "string",
+      "enum": [
+        "IMAGE_TYPE_UNSPECIFIED",
+        "IMAGE_TYPE_NATIVE",
+        "IMAGE_TYPE_REFERENCE"
+      ],
+      "default": "IMAGE_TYPE_UNSPECIFIED"
+    },
+    "dataNFTContract": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "totalSupply": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "tokenIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "dataToken": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "tokenId": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "meta": {
+          "$ref": "#/definitions/dataTokenMeta"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "dataTokenMeta": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/dataTokenMetaImage"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "dataTokenMetaImage": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/dataImageType"
+        },
+        "data": {
+          "type": "string"
+        }
+      }
+    },
+    "dataTransferHistory": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "tokenId": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "blockNumber": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "indexLogInBlock": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -141,85 +382,96 @@
         }
       }
     },
-    "serviceBatchMintRequest": {
+    "serviceGetHolderResponse": {
       "type": "object",
       "properties": {
-        "requestId": {
-          "type": "integer",
-          "format": "int64"
+        "holder": {
+          "$ref": "#/definitions/dataHolder"
+        }
+      }
+    },
+    "serviceGetNftContractResponse": {
+      "type": "object",
+      "properties": {
+        "nft": {
+          "$ref": "#/definitions/dataNFTContract"
+        }
+      }
+    },
+    "serviceGetNftTokenResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "$ref": "#/definitions/dataToken"
         },
-        "sequence": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "to": {
-          "type": "string"
-        },
-        "amounts": {
+        "transferHistories": {
           "type": "array",
           "items": {
-            "type": "integer",
-            "format": "int64"
+            "type": "object",
+            "$ref": "#/definitions/dataTransferHistory"
           }
         }
       }
     },
-    "serviceBatchMintResponse": {
+    "serviceHolderMini": {
       "type": "object",
       "properties": {
-        "transactionHash": {
-          "type": "string"
-        },
-        "nftIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "serviceGenerateTransferSigRequest": {
-      "type": "object",
-      "properties": {
-        "from": {
-          "type": "string"
-        },
-        "to": {
-          "type": "string"
-        },
-        "id": {
+        "address": {
           "type": "string"
         },
         "amount": {
-          "type": "string"
-        }
-      }
-    },
-    "serviceGenerateTransferSigResponse": {
-      "type": "object",
-      "properties": {
-        "sig": {
-          "type": "string"
-        }
-      }
-    },
-    "serviceGetTransactionHashResponse": {
-      "type": "object",
-      "properties": {
-        "transactionHash": {
-          "type": "string"
-        },
-        "sequence": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "to": {
-          "type": "string"
-        },
-        "createdAt": {
           "type": "string",
-          "format": "date-time",
-          "title": "repeated data.BatchContent contents   = 4;"
+          "format": "uint64"
+        }
+      }
+    },
+    "serviceListAllHolderResponse": {
+      "type": "object",
+      "properties": {
+        "holders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/serviceHolderMini"
+          }
+        }
+      }
+    },
+    "serviceListAllNftContractResponse": {
+      "type": "object",
+      "properties": {
+        "nfts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dataNFTContract"
+          }
+        }
+      }
+    },
+    "serviceListAllNftTokenResponse": {
+      "type": "object",
+      "properties": {
+        "tokens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/serviceTokenMini"
+          }
+        }
+      }
+    },
+    "serviceTokenMini": {
+      "type": "object",
+      "properties": {
+        "tokenId": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "meta": {
+          "$ref": "#/definitions/dataTokenMeta"
         }
       }
     }

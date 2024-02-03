@@ -1,0 +1,78 @@
+syntax = "proto3";
+package tak1827.lightnftindexer.service;
+
+option go_package = "github.com/tak1827/light-nft-indexer/service";
+
+import "google/api/annotations.proto";
+import "data/nft.proto";
+
+service Nft {
+  rpc GetNftContract(GetNftContractRequest) returns (GetNftContractResponse) {
+    option (google.api.http).get = "/v1/nft/{contract_address}";
+  }
+
+  rpc ListAllNftContract(ListAllNftContractRequest) returns (ListAllNftContractResponse) {
+    option (google.api.http).get = "/v1/nft";
+  }
+
+  rpc GetNftToken(GetNftTokenRequest) returns (GetNftTokenResponse) {
+    option (google.api.http).get = "/v1/nft/{contract_address}/token/{token_id}";
+  }
+
+  rpc ListAllNftToken(ListAllNftTokenRequest) returns (ListAllNftTokenResponse) {
+    option (google.api.http).get = "/v1/nft/{contract_address}/token";
+  }
+
+  // rpc CreateNftContract(CreateNftContractRequest) returns (CreateNftContractResponse) {
+  //   option (google.api.http) = {
+  //     post: "/v1/nft"
+  //     body: "*"
+  //   };
+  // }
+}
+
+message GetNftContractRequest {
+  string contract_address = 1;
+}
+
+message GetNftContractResponse {
+  data.NFTContract nft = 1;
+}
+
+message ListAllNftContractRequest {}
+
+message ListAllNftContractResponse {
+  repeated data.NFTContract nfts = 1;
+}
+
+message GetNftTokenRequest {
+  string contract_address = 1;
+  string token_id         = 2;
+}
+
+message GetNftTokenResponse {
+  data.Token token                                 = 1;
+  repeated data.TransferHistory transfer_histories = 2;
+}
+
+message ListAllNftTokenRequest {
+  string contract_address = 1;
+}
+
+message TokenMini {
+  string         token_id = 1;
+  string         owner    = 2;
+  data.TokenMeta meta     = 3;
+}
+
+message ListAllNftTokenResponse {
+  repeated TokenMini tokens = 1;
+}
+
+// message CreateNftContractRequest {
+//   uint32 contract_address = 1;
+// }
+
+// message CreateNftContractResponse {
+//   data.NFTContract nft = 1;
+// }

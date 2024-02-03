@@ -41,6 +41,18 @@ func (d *NFTContract) Value() []byte {
 	return value
 }
 
+func (d *Token) Key() []byte {
+	return append(PrefixToken, []byte(fmt.Sprintf("%s%s%s%s", Separator, d.Address, Separator, d.TokenId))...)
+}
+
+func (d *Token) Value() []byte {
+	value, err := proto.Marshal(d)
+	if err != nil {
+		panic(fmt.Errorf("failed to marshal data: %w", err))
+	}
+	return value
+}
+
 type TokenOwnerIndex struct {
 	*Token
 }
@@ -59,18 +71,6 @@ func (d *TokenOwnerIndex) Value() []byte {
 
 func NewTokenOwnerIndex(d *Token) *TokenOwnerIndex {
 	return &TokenOwnerIndex{Token: d}
-}
-
-func (d *Token) Key() []byte {
-	return append(PrefixToken, []byte(fmt.Sprintf("%s%s%s%s", Separator, d.Address, Separator, d.TokenId))...)
-}
-
-func (d *Token) Value() []byte {
-	value, err := proto.Marshal(d)
-	if err != nil {
-		panic(fmt.Errorf("failed to marshal data: %w", err))
-	}
-	return value
 }
 
 func NewTransferHistory(address, tokenId, from, to string, now *timestamppb.Timestamp) (d *TransferHistory) {
