@@ -19,36 +19,14 @@
     "application/json"
   ],
   "paths": {
-    "/v1/holder": {
-      "get": {
-        "operationId": "Holder_ListAllHolder",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/serviceListAllHolderResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "Holder"
-        ]
-      }
-    },
     "/v1/holder/{walletAddress}": {
       "get": {
-        "operationId": "Holder_GetHolder",
+        "operationId": "Holder_ListHolderAllNftToken",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/serviceGetHolderResponse"
+              "$ref": "#/definitions/serviceListHolderAllNftTokenResponse"
             }
           },
           "default": {
@@ -61,6 +39,42 @@
         "parameters": [
           {
             "name": "walletAddress",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Holder"
+        ]
+      }
+    },
+    "/v1/holder/{walletAddress}/{contractAddress}": {
+      "get": {
+        "operationId": "Holder_ListHolderNftToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceListHolderNftTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "walletAddress",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "contractAddress",
             "in": "path",
             "required": true,
             "type": "string"
@@ -191,44 +205,6 @@
     }
   },
   "definitions": {
-    "dataCollection": {
-      "type": "object",
-      "properties": {
-        "contractAddress": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        }
-      }
-    },
-    "dataHolder": {
-      "type": "object",
-      "properties": {
-        "address": {
-          "type": "string"
-        },
-        "amount": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "collections": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/dataCollection"
-          }
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "dataImageType": {
       "type": "string",
       "enum": [
@@ -376,11 +352,18 @@
         }
       }
     },
-    "serviceGetHolderResponse": {
+    "serviceContractWithToken": {
       "type": "object",
       "properties": {
-        "holder": {
-          "$ref": "#/definitions/dataHolder"
+        "nftContract": {
+          "$ref": "#/definitions/dataNFTContract"
+        },
+        "tokens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/serviceTokenMini"
+          }
         }
       }
     },
@@ -407,30 +390,6 @@
         }
       }
     },
-    "serviceHolderMini": {
-      "type": "object",
-      "properties": {
-        "address": {
-          "type": "string"
-        },
-        "amount": {
-          "type": "string",
-          "format": "uint64"
-        }
-      }
-    },
-    "serviceListAllHolderResponse": {
-      "type": "object",
-      "properties": {
-        "holders": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/serviceHolderMini"
-          }
-        }
-      }
-    },
     "serviceListAllNftContractResponse": {
       "type": "object",
       "properties": {
@@ -446,6 +405,33 @@
     "serviceListAllNftTokenResponse": {
       "type": "object",
       "properties": {
+        "tokens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/serviceTokenMini"
+          }
+        }
+      }
+    },
+    "serviceListHolderAllNftTokenResponse": {
+      "type": "object",
+      "properties": {
+        "nftContracts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/serviceContractWithToken"
+          }
+        }
+      }
+    },
+    "serviceListHolderNftTokenResponse": {
+      "type": "object",
+      "properties": {
+        "nftContract": {
+          "$ref": "#/definitions/dataNFTContract"
+        },
         "tokens": {
           "type": "array",
           "items": {

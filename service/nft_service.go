@@ -88,16 +88,7 @@ func (s *NftService) ListAllNftToken(ctx context.Context, req *ListAllNftTokenRe
 		return nil, fmt.Errorf("failed to get list of nft contracts: %w", err)
 	}
 
-	tokenMinis := make([]*TokenMini, len(tokens))
-	for i, token := range tokens {
-		tokenMinis[i] = &TokenMini{
-			TokenId: token.TokenId,
-			Owner:   token.Owner,
-			Meta:    token.Meta,
-		}
-	}
-
 	return &ListAllNftTokenResponse{
-		Tokens: tokenMinis,
+		Tokens: tokenToTokenMinis(tokens),
 	}, nil
 }

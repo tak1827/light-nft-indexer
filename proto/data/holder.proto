@@ -6,6 +6,7 @@ option optimize_for = CODE_SIZE;
 
 import "google/protobuf/timestamp.proto";
 
+// not used so far
 message Holder {
   string address = 1;
   uint64 amount  = 2;

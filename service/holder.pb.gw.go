@@ -31,8 +31,8 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_Holder_GetHolder_0(ctx context.Context, marshaler runtime.Marshaler, client HolderClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetHolderRequest
+func request_Holder_ListHolderNftToken_0(ctx context.Context, marshaler runtime.Marshaler, client HolderClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ListHolderNftTokenRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -52,13 +52,23 @@ func request_Holder_GetHolder_0(ctx context.Context, marshaler runtime.Marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wallet_address", err)
 	}
 
-	msg, err := client.GetHolder(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	val, ok = pathParams["contract_address"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "contract_address")
+	}
+
+	protoReq.ContractAddress, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "contract_address", err)
+	}
+
+	msg, err := client.ListHolderNftToken(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Holder_GetHolder_0(ctx context.Context, marshaler runtime.Marshaler, server HolderServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetHolderRequest
+func local_request_Holder_ListHolderNftToken_0(ctx context.Context, marshaler runtime.Marshaler, server HolderServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ListHolderNftTokenRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -78,25 +88,69 @@ func local_request_Holder_GetHolder_0(ctx context.Context, marshaler runtime.Mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wallet_address", err)
 	}
 
-	msg, err := server.GetHolder(ctx, &protoReq)
+	val, ok = pathParams["contract_address"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "contract_address")
+	}
+
+	protoReq.ContractAddress, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "contract_address", err)
+	}
+
+	msg, err := server.ListHolderNftToken(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Holder_ListAllHolder_0(ctx context.Context, marshaler runtime.Marshaler, client HolderClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListAllHolderRequest
+func request_Holder_ListHolderAllNftToken_0(ctx context.Context, marshaler runtime.Marshaler, client HolderClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ListHolderAllNftTokenRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := client.ListAllHolder(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["wallet_address"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "wallet_address")
+	}
+
+	protoReq.WalletAddress, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wallet_address", err)
+	}
+
+	msg, err := client.ListHolderAllNftToken(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Holder_ListAllHolder_0(ctx context.Context, marshaler runtime.Marshaler, server HolderServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListAllHolderRequest
+func local_request_Holder_ListHolderAllNftToken_0(ctx context.Context, marshaler runtime.Marshaler, server HolderServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ListHolderAllNftTokenRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := server.ListAllHolder(ctx, &protoReq)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["wallet_address"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "wallet_address")
+	}
+
+	protoReq.WalletAddress, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wallet_address", err)
+	}
+
+	msg, err := server.ListHolderAllNftToken(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -107,7 +161,7 @@ func local_request_Holder_ListAllHolder_0(ctx context.Context, marshaler runtime
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterHolderHandlerFromEndpoint instead.
 func RegisterHolderHandlerServer(ctx context.Context, mux *runtime.ServeMux, server HolderServer) error {
 
-	mux.Handle("GET", pattern_Holder_GetHolder_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Holder_ListHolderNftToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -115,12 +169,12 @@ func RegisterHolderHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/tak1827.lightnftindexer.service.Holder/GetHolder", runtime.WithHTTPPathPattern("/v1/holder/{wallet_address}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/tak1827.lightnftindexer.service.Holder/ListHolderNftToken", runtime.WithHTTPPathPattern("/v1/holder/{wallet_address}/{contract_address}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Holder_GetHolder_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Holder_ListHolderNftToken_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -128,11 +182,11 @@ func RegisterHolderHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 			return
 		}
 
-		forward_Holder_GetHolder_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Holder_ListHolderNftToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Holder_ListAllHolder_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Holder_ListHolderAllNftToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -140,12 +194,12 @@ func RegisterHolderHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/tak1827.lightnftindexer.service.Holder/ListAllHolder", runtime.WithHTTPPathPattern("/v1/holder"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/tak1827.lightnftindexer.service.Holder/ListHolderAllNftToken", runtime.WithHTTPPathPattern("/v1/holder/{wallet_address}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Holder_ListAllHolder_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Holder_ListHolderAllNftToken_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -153,7 +207,7 @@ func RegisterHolderHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 			return
 		}
 
-		forward_Holder_ListAllHolder_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Holder_ListHolderAllNftToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -198,47 +252,47 @@ func RegisterHolderHandler(ctx context.Context, mux *runtime.ServeMux, conn *grp
 // "HolderClient" to call the correct interceptors.
 func RegisterHolderHandlerClient(ctx context.Context, mux *runtime.ServeMux, client HolderClient) error {
 
-	mux.Handle("GET", pattern_Holder_GetHolder_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Holder_ListHolderNftToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/tak1827.lightnftindexer.service.Holder/GetHolder", runtime.WithHTTPPathPattern("/v1/holder/{wallet_address}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/tak1827.lightnftindexer.service.Holder/ListHolderNftToken", runtime.WithHTTPPathPattern("/v1/holder/{wallet_address}/{contract_address}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Holder_GetHolder_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Holder_ListHolderNftToken_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Holder_GetHolder_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Holder_ListHolderNftToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Holder_ListAllHolder_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Holder_ListHolderAllNftToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/tak1827.lightnftindexer.service.Holder/ListAllHolder", runtime.WithHTTPPathPattern("/v1/holder"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/tak1827.lightnftindexer.service.Holder/ListHolderAllNftToken", runtime.WithHTTPPathPattern("/v1/holder/{wallet_address}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Holder_ListAllHolder_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Holder_ListHolderAllNftToken_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Holder_ListAllHolder_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Holder_ListHolderAllNftToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -246,13 +300,13 @@ func RegisterHolderHandlerClient(ctx context.Context, mux *runtime.ServeMux, cli
 }
 
 var (
-	pattern_Holder_GetHolder_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "holder", "wallet_address"}, ""))
+	pattern_Holder_ListHolderNftToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "holder", "wallet_address", "contract_address"}, ""))
 
-	pattern_Holder_ListAllHolder_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "holder"}, ""))
+	pattern_Holder_ListHolderAllNftToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "holder", "wallet_address"}, ""))
 )
 
 var (
-	forward_Holder_GetHolder_0 = runtime.ForwardResponseMessage
+	forward_Holder_ListHolderNftToken_0 = runtime.ForwardResponseMessage
 
-	forward_Holder_ListAllHolder_0 = runtime.ForwardResponseMessage
+	forward_Holder_ListHolderAllNftToken_0 = runtime.ForwardResponseMessage
 )

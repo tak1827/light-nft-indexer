@@ -21,6 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// not used so far
 type Holder struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -22,8 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HolderClient interface {
-	GetHolder(ctx context.Context, in *GetHolderRequest, opts ...grpc.CallOption) (*GetHolderResponse, error)
-	ListAllHolder(ctx context.Context, in *ListAllHolderRequest, opts ...grpc.CallOption) (*ListAllHolderResponse, error)
+	ListHolderNftToken(ctx context.Context, in *ListHolderNftTokenRequest, opts ...grpc.CallOption) (*ListHolderNftTokenResponse, error)
+	ListHolderAllNftToken(ctx context.Context, in *ListHolderAllNftTokenRequest, opts ...grpc.CallOption) (*ListHolderAllNftTokenResponse, error)
 }
 
 type holderClient struct {
@@ -34,18 +34,18 @@ func NewHolderClient(cc grpc.ClientConnInterface) HolderClient {
 	return &holderClient{cc}
 }
 
-func (c *holderClient) GetHolder(ctx context.Context, in *GetHolderRequest, opts ...grpc.CallOption) (*GetHolderResponse, error) {
-	out := new(GetHolderResponse)
-	err := c.cc.Invoke(ctx, "/tak1827.lightnftindexer.service.Holder/GetHolder", in, out, opts...)
+func (c *holderClient) ListHolderNftToken(ctx context.Context, in *ListHolderNftTokenRequest, opts ...grpc.CallOption) (*ListHolderNftTokenResponse, error) {
+	out := new(ListHolderNftTokenResponse)
+	err := c.cc.Invoke(ctx, "/tak1827.lightnftindexer.service.Holder/ListHolderNftToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *holderClient) ListAllHolder(ctx context.Context, in *ListAllHolderRequest, opts ...grpc.CallOption) (*ListAllHolderResponse, error) {
-	out := new(ListAllHolderResponse)
-	err := c.cc.Invoke(ctx, "/tak1827.lightnftindexer.service.Holder/ListAllHolder", in, out, opts...)
+func (c *holderClient) ListHolderAllNftToken(ctx context.Context, in *ListHolderAllNftTokenRequest, opts ...grpc.CallOption) (*ListHolderAllNftTokenResponse, error) {
+	out := new(ListHolderAllNftTokenResponse)
+	err := c.cc.Invoke(ctx, "/tak1827.lightnftindexer.service.Holder/ListHolderAllNftToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,19 +56,19 @@ func (c *holderClient) ListAllHolder(ctx context.Context, in *ListAllHolderReque
 // All implementations should embed UnimplementedHolderServer
 // for forward compatibility
 type HolderServer interface {
-	GetHolder(context.Context, *GetHolderRequest) (*GetHolderResponse, error)
-	ListAllHolder(context.Context, *ListAllHolderRequest) (*ListAllHolderResponse, error)
+	ListHolderNftToken(context.Context, *ListHolderNftTokenRequest) (*ListHolderNftTokenResponse, error)
+	ListHolderAllNftToken(context.Context, *ListHolderAllNftTokenRequest) (*ListHolderAllNftTokenResponse, error)
 }
 
 // UnimplementedHolderServer should be embedded to have forward compatible implementations.
 type UnimplementedHolderServer struct {
 }
 
-func (UnimplementedHolderServer) GetHolder(context.Context, *GetHolderRequest) (*GetHolderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetHolder not implemented")
+func (UnimplementedHolderServer) ListHolderNftToken(context.Context, *ListHolderNftTokenRequest) (*ListHolderNftTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListHolderNftToken not implemented")
 }
-func (UnimplementedHolderServer) ListAllHolder(context.Context, *ListAllHolderRequest) (*ListAllHolderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListAllHolder not implemented")
+func (UnimplementedHolderServer) ListHolderAllNftToken(context.Context, *ListHolderAllNftTokenRequest) (*ListHolderAllNftTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListHolderAllNftToken not implemented")
 }
 
 // UnsafeHolderServer may be embedded to opt out of forward compatibility for this service.
@@ -82,38 +82,38 @@ func RegisterHolderServer(s grpc.ServiceRegistrar, srv HolderServer) {
 	s.RegisterService(&Holder_ServiceDesc, srv)
 }
 
-func _Holder_GetHolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetHolderRequest)
+func _Holder_ListHolderNftToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListHolderNftTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HolderServer).GetHolder(ctx, in)
+		return srv.(HolderServer).ListHolderNftToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/tak1827.lightnftindexer.service.Holder/GetHolder",
+		FullMethod: "/tak1827.lightnftindexer.service.Holder/ListHolderNftToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HolderServer).GetHolder(ctx, req.(*GetHolderRequest))
+		return srv.(HolderServer).ListHolderNftToken(ctx, req.(*ListHolderNftTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Holder_ListAllHolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListAllHolderRequest)
+func _Holder_ListHolderAllNftToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListHolderAllNftTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HolderServer).ListAllHolder(ctx, in)
+		return srv.(HolderServer).ListHolderAllNftToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/tak1827.lightnftindexer.service.Holder/ListAllHolder",
+		FullMethod: "/tak1827.lightnftindexer.service.Holder/ListHolderAllNftToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HolderServer).ListAllHolder(ctx, req.(*ListAllHolderRequest))
+		return srv.(HolderServer).ListHolderAllNftToken(ctx, req.(*ListHolderAllNftTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -126,12 +126,12 @@ var Holder_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*HolderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetHolder",
-			Handler:    _Holder_GetHolder_Handler,
+			MethodName: "ListHolderNftToken",
+			Handler:    _Holder_ListHolderNftToken_Handler,
 		},
 		{
-			MethodName: "ListAllHolder",
-			Handler:    _Holder_ListAllHolder_Handler,
+			MethodName: "ListHolderAllNftToken",
+			Handler:    _Holder_ListHolderAllNftToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

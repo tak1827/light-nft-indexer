@@ -57,7 +57,7 @@ type TokenOwnerIndex struct {
 }
 
 func (d *TokenOwnerIndex) Key() []byte {
-	return append(PrefixTokenOwnerIndex, []byte(fmt.Sprintf("%s%s%s%s", Separator, d.Owner, Separator, d.TokenId))...)
+	return append(PrefixTokenOwnerIndex, []byte(fmt.Sprintf("%s%s%s%s%s%s", Separator, d.Owner, Separator, d.Address, Separator, d.TokenId))...)
 }
 
 func (d *TokenOwnerIndex) Value() []byte {

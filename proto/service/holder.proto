@@ -4,33 +4,65 @@ package tak1827.lightnftindexer.service;
 option go_package = "github.com/tak1827/light-nft-indexer/service";
 
 import "google/api/annotations.proto";
-import "data/holder.proto";
+import "data/nft.proto";
+import "service/nft.proto";
 
 service Holder {
-  rpc GetHolder(GetHolderRequest) returns (GetHolderResponse) {
+  rpc ListHolderNftToken(ListHolderNftTokenRequest) returns (ListHolderNftTokenResponse) {
+    option (google.api.http).get = "/v1/holder/{wallet_address}/{contract_address}";
+  }
+
+  rpc ListHolderAllNftToken(ListHolderAllNftTokenRequest) returns (ListHolderAllNftTokenResponse) {
     option (google.api.http).get = "/v1/holder/{wallet_address}";
   }
 
-  rpc ListAllHolder(ListAllHolderRequest) returns (ListAllHolderResponse) {
-    option (google.api.http).get = "/v1/holder";
-  }
+  // rpc GetHolder(GetHolderRequest) returns (GetHolderResponse) {
+  //   option (google.api.http).get = "/v1/holder/{wallet_address}";
+  // }
+
+  // rpc ListAllHolder(ListAllHolderRequest) returns (ListAllHolderResponse) {
+  //   option (google.api.http).get = "/v1/holder";
+  // }
 }
 
-message GetHolderRequest {
+message ListHolderNftTokenRequest {
+  string wallet_address   = 1;
+  string contract_address = 2;
+}
+
+message ListHolderNftTokenResponse {
+  data.NFTContract nft_contract     = 1;
+  repeated service.TokenMini tokens = 2;
+}
+
+message ListHolderAllNftTokenRequest {
   string wallet_address = 1;
 }
 
-message GetHolderResponse {
-  data.Holder holder = 1;
+message ListHolderAllNftTokenResponse {
+  repeated ContractWithToken nft_contracts = 1;
 }
 
-message ListAllHolderRequest {}
-
-message HolderMini {
-  string address = 1;
-  uint64 amount  = 2;
+message ContractWithToken {
+  data.NFTContract nft_contract     = 1;
+  repeated service.TokenMini tokens = 2;
 }
 
-message ListAllHolderResponse {
-  repeated HolderMini holders = 1;
-}
+// message GetHolderRequest {
+//   string wallet_address = 1;
+// }
+
+// message GetHolderResponse {
+//   data.Holder holder = 1;
+// }
+
+// message ListAllHolderRequest {}
+
+// message HolderMini {
+//   string address = 1;
+//   uint64 amount  = 2;
+// }
+
+// message ListAllHolderResponse {
+//   repeated HolderMini holders = 1;
+// }
