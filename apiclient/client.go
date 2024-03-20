@@ -24,3 +24,7 @@ type ChainHttpClient interface {
 	FetchNFTInfo(ctx context.Context, d *data.NFTContract) (err error)
 	GetTokenMeta(ctx context.Context, d *data.Token) (err error)
 }
+
+type ImageDownloadClient interface {
+	Download(ctx context.Context, imageURL, tag string, overwrite bool) (location string, err error)
+}
