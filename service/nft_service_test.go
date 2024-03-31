@@ -27,7 +27,7 @@ func TestNewNftService_GetNftContract(t *testing.T) {
 		}
 		db      = testutil.InitDB(initalData...)
 		ctx     = server.CtxWithDB(context.Background(), db)
-		base, _ = NewBaseService(ctx)
+		base, _ = NewBaseService(ctx, nil)
 		srv     = NewNftService(&base)
 	)
 	defer db.Close()
@@ -80,7 +80,7 @@ func TestNewNftService_ListAllNftContract(t *testing.T) {
 		}
 		db      = testutil.InitDB()
 		ctx     = server.CtxWithDB(context.Background(), db)
-		base, _ = NewBaseService(ctx)
+		base, _ = NewBaseService(ctx, nil)
 		srv     = NewNftService(&base)
 	)
 	defer db.Close()
@@ -107,13 +107,13 @@ func TestNewNftService_GetNftToken(t *testing.T) {
 	var (
 		tokenId    = "1243"
 		initalData = []data.StorableData{
-			&data.Token{Address: oneAddress.Hex(), TokenId: tokenId, Owner: "owner1", Meta: &data.TokenMeta{Meta: "meta"}},
+			&data.Token{Address: oneAddress.Hex(), TokenId: tokenId, Owner: "owner1", Meta: &data.TokenMeta{Origin: "meta"}},
 			&data.TransferHistory{Address: oneAddress.Hex(), TokenId: tokenId, IndexLogInBlock: 1, From: "owner1", To: "owner2"},
 			&data.TransferHistory{Address: oneAddress.Hex(), TokenId: tokenId, IndexLogInBlock: 2, From: "owner1", To: "owner2"},
 		}
 		db      = testutil.InitDB(initalData...)
 		ctx     = server.CtxWithDB(context.Background(), db)
-		base, _ = NewBaseService(ctx)
+		base, _ = NewBaseService(ctx, nil)
 		srv     = NewNftService(&base)
 	)
 	defer db.Close()
@@ -169,13 +169,13 @@ func TestNewNftService_GetNftToken(t *testing.T) {
 func TestNewNftService_ListAllNftToken(t *testing.T) {
 	var (
 		dataSets = []data.StorableData{
-			&data.Token{Address: oneAddress.Hex(), TokenId: "101", Owner: "owner1", Meta: &data.TokenMeta{Meta: "meta"}},
-			&data.Token{Address: oneAddress.Hex(), TokenId: "102", Owner: "owner2", Meta: &data.TokenMeta{Meta: "meta"}},
-			&data.Token{Address: oneAddress.Hex(), TokenId: "103", Owner: "owner3", Meta: &data.TokenMeta{Meta: "meta"}},
+			&data.Token{Address: oneAddress.Hex(), TokenId: "101", Owner: "owner1", Meta: &data.TokenMeta{Origin: "meta"}},
+			&data.Token{Address: oneAddress.Hex(), TokenId: "102", Owner: "owner2", Meta: &data.TokenMeta{Origin: "meta"}},
+			&data.Token{Address: oneAddress.Hex(), TokenId: "103", Owner: "owner3", Meta: &data.TokenMeta{Origin: "meta"}},
 		}
 		db      = testutil.InitDB()
 		ctx     = server.CtxWithDB(context.Background(), db)
-		base, _ = NewBaseService(ctx)
+		base, _ = NewBaseService(ctx, nil)
 		srv     = NewNftService(&base)
 	)
 	defer db.Close()

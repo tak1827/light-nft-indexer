@@ -203,7 +203,7 @@ func (c *EthHttpClient) GetTokenMeta(ctx context.Context, d *data.Token) (err er
 		err = fmt.Errorf("failed to convert token id(%s) to big.Int", d.TokenId)
 		return
 	}
-	if d.Meta.Meta, err = contract.TokenURI(&opt, tokenId); err != nil {
+	if d.Meta.Origin, err = contract.TokenURI(&opt, tokenId); err != nil {
 		err = fmt.Errorf("failed to get name: %w", err)
 		return
 	}

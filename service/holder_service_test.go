@@ -25,14 +25,14 @@ func TestNewHolderService_ListHolderNftToken(t *testing.T) {
 	var (
 		dataSets = []data.StorableData{
 			&data.NFTContract{Address: oneAddress.Hex(), Name: "test1", Symbol: "T1"},
-			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "101", Owner: owner1.Hex(), Meta: &data.TokenMeta{Meta: "meta"}}},
-			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "102", Owner: owner1.Hex(), Meta: &data.TokenMeta{Meta: "meta"}}},
-			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "103", Owner: owner2.Hex(), Meta: &data.TokenMeta{Meta: "meta"}}},
-			&data.TokenOwnerIndex{Token: &data.Token{Address: twoAddress.Hex(), TokenId: "104", Owner: owner1.Hex(), Meta: &data.TokenMeta{Meta: "meta"}}},
+			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "101", Owner: owner1.Hex(), Meta: &data.TokenMeta{Origin: "meta"}}},
+			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "102", Owner: owner1.Hex(), Meta: &data.TokenMeta{Origin: "meta"}}},
+			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "103", Owner: owner2.Hex(), Meta: &data.TokenMeta{Origin: "meta"}}},
+			&data.TokenOwnerIndex{Token: &data.Token{Address: twoAddress.Hex(), TokenId: "104", Owner: owner1.Hex(), Meta: &data.TokenMeta{Origin: "meta"}}},
 		}
 		db      = testutil.InitDB()
 		ctx     = server.CtxWithDB(context.Background(), db)
-		base, _ = NewBaseService(ctx)
+		base, _ = NewBaseService(ctx, nil)
 		srv     = NewHolderService(&base)
 	)
 	defer db.Close()
@@ -62,15 +62,15 @@ func TestNewHolderService_ListHolderAllNftToken(t *testing.T) {
 		dataSets = []data.StorableData{
 			&data.NFTContract{Address: oneAddress.Hex(), Name: "test1", Symbol: "T1"},
 			&data.NFTContract{Address: twoAddress.Hex(), Name: "test1", Symbol: "T1"},
-			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "101", Owner: owner1.Hex(), Meta: &data.TokenMeta{Meta: "meta"}}},
-			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "102", Owner: owner1.Hex(), Meta: &data.TokenMeta{Meta: "meta"}}},
-			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "103", Owner: owner2.Hex(), Meta: &data.TokenMeta{Meta: "meta"}}},
-			&data.TokenOwnerIndex{Token: &data.Token{Address: twoAddress.Hex(), TokenId: "104", Owner: owner1.Hex(), Meta: &data.TokenMeta{Meta: "meta"}}},
-			&data.TokenOwnerIndex{Token: &data.Token{Address: twoAddress.Hex(), TokenId: "105", Owner: owner2.Hex(), Meta: &data.TokenMeta{Meta: "meta"}}},
+			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "101", Owner: owner1.Hex(), Meta: &data.TokenMeta{Origin: "meta"}}},
+			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "102", Owner: owner1.Hex(), Meta: &data.TokenMeta{Origin: "meta"}}},
+			&data.TokenOwnerIndex{Token: &data.Token{Address: oneAddress.Hex(), TokenId: "103", Owner: owner2.Hex(), Meta: &data.TokenMeta{Origin: "meta"}}},
+			&data.TokenOwnerIndex{Token: &data.Token{Address: twoAddress.Hex(), TokenId: "104", Owner: owner1.Hex(), Meta: &data.TokenMeta{Origin: "meta"}}},
+			&data.TokenOwnerIndex{Token: &data.Token{Address: twoAddress.Hex(), TokenId: "105", Owner: owner2.Hex(), Meta: &data.TokenMeta{Origin: "meta"}}},
 		}
 		db      = testutil.InitDB()
 		ctx     = server.CtxWithDB(context.Background(), db)
-		base, _ = NewBaseService(ctx)
+		base, _ = NewBaseService(ctx, nil)
 		srv     = NewHolderService(&base)
 	)
 	defer db.Close()

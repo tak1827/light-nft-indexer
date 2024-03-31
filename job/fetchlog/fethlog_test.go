@@ -96,7 +96,7 @@ func TestFetcher_FetchTokens(t *testing.T) {
 	})
 	require.Equal(t, acc2.Hex(), tokens[0].GetOwner())
 	require.Equal(t, acc3.Hex(), tokens[1].GetOwner())
-	require.Equal(t, "meta", tokens[0].GetMeta().GetMeta())
+	require.Equal(t, "meta", tokens[0].GetMeta().GetOrigin())
 
 	// checking the height of next fetch block is updated
 	b, err := f.getBlock(data.BlockType_BLOCK_TYPE_LAST_TRANSFER_LOG_FETCHED, nft.Address, now)

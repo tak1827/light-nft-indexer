@@ -18,7 +18,7 @@ const (
 func TestDownload(t *testing.T) {
 	var (
 		ctx          = context.Background()
-		baseLocation = "./static"
+		baseLocation = "./static-test"
 		baseImageURL = "https://example.com"
 		filename     = "logotop.svg"
 		imageURL     = "https://bitcoin.org/img/icons/" + filename
@@ -37,5 +37,6 @@ func TestDownload(t *testing.T) {
 	_, err = iclient.Download(ctx, imageURL, tag, false)
 	require.ErrorIs(t, err, ErrImageAlreadyExists)
 
+	// clear
 	os.RemoveAll(baseLocation)
 }

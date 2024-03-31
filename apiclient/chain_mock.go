@@ -58,7 +58,7 @@ func (c *MockChainClient) FetchNFTInfo(ctx context.Context, d *data.NFTContract)
 
 func (c *MockChainClient) GetTokenMeta(ctx context.Context, d *data.Token) (err error) {
 	d.Meta = &data.TokenMeta{
-		Meta: "meta",
+		Origin: "meta",
 		Image: &data.TokenMetaImage{
 			Type: data.ImageType_IMAGE_TYPE_UNSPECIFIED,
 			Data: "data",

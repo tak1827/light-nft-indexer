@@ -214,6 +214,24 @@
       ],
       "default": "IMAGE_TYPE_UNSPECIFIED"
     },
+    "dataMetaStandard": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "externalUrl": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        }
+      },
+      "title": "OpenSea Metadata Standard\nhttps://docs.opensea.io/docs/metadata-standards"
+    },
     "dataNFTContract": {
       "type": "object",
       "properties": {
@@ -268,11 +286,18 @@
     "dataTokenMeta": {
       "type": "object",
       "properties": {
-        "meta": {
+        "origin": {
           "type": "string"
         },
         "image": {
           "$ref": "#/definitions/dataTokenMetaImage"
+        },
+        "timeOfExpire": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "standard": {
+          "$ref": "#/definitions/dataMetaStandard"
         },
         "createdAt": {
           "type": "string",

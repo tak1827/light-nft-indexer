@@ -33,11 +33,27 @@ message Token {
 }
 
 message TokenMeta {
-  string         meta  = 1;
-  TokenMetaImage image = 2;
+  string origin = 1;
+
+  reserved 2;
+
+  TokenMetaImage image          = 3;
+  uint32         time_of_expire = 4;
+
+  reserved 5;
+  MetaStandard standard = 6;
 
   google.protobuf.Timestamp created_at = 10;
   google.protobuf.Timestamp updated_at = 11;
+}
+
+// OpenSea Metadata Standard
+// https://docs.opensea.io/docs/metadata-standards
+message MetaStandard {
+  string name         = 1;
+  string description  = 2;
+  string external_url = 3;
+  string image        = 4;
 }
 
 message TokenMetaImage {
